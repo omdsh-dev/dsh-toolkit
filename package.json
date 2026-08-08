@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-toolkit",
-  "description": "DSH zero-dependency toolkit collection: time / encoding / json / calculator / csv / regex in one entry point",
+  "description": "DSH zero-dependency toolkit collection: time / encoding / json / calculator / csv / regex / markdown in one entry point",
   "version": "0.0.1",
   "private": true,
   "type": "module",

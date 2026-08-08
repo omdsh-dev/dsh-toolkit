@@ -1,5 +1,5 @@
 #!/bin/sh
-# 一键构建：6 个子包 + meta 包（tsc），并验证产物完整性（审查 TK-01/TK-07）。
+# 一键构建：7 个子包 + meta 包（tsc），并验证产物完整性（审查 TK-01/TK-07）。
 #
 # 前置条件：DSH_MONOREPO 环境变量或第一个参数（见 link-deps.sh）。
 set -eu

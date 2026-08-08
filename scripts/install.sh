@@ -19,7 +19,7 @@ if [ "$MODE" = "all" ]; then
     fi
   done
   echo "验证："
-  dsh --profile "$PROFILE" --dump-config | grep -E "tool-(time|encoding|json|calculator|csv|regex)" | sort -u
+  dsh --profile "$PROFILE" --dump-config | grep -E "tool-(time|encoding|json|calculator|csv|regex|markdown)" | sort -u
 elif [ "$MODE" = "meta" ]; then
   echo "dsh plugin --profile $PROFILE add $E"
   if [ "${DRY_RUN:-0}" != "1" ]; then

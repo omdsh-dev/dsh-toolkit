@@ -1,6 +1,6 @@
 # 🧰 dsh-toolkit
 
-DSH 零依赖工具包 collection —— time / encoding / json / calculator / csv / regex 六个确定性工具，**统一入口一键安装**。
+DSH 零依赖工具包 collection —— time / encoding / json / calculator / csv / regex / markdown 七个确定性工具，**统一入口一键安装**。
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
@@ -29,7 +29,7 @@ dsh-toolkit/
 ├── packages/dsh-tool-*   # vendored 子包（发布态快照，name 保持 @deepseek-ai/dsh-tool-*）
 ├── scripts/
 │   ├── link-deps.sh      # 构建期 junction（cordis → vendor/cordis，dsh-tools → packages/core/tools）
-│   ├── build-all.sh      # 一键构建 6 子包 + meta 包（tsc）
+│   ├── build-all.sh      # 一键构建 7 子包 + meta 包（tsc）
 │   ├── test-all.sh       # 一键跑 7 子包 vitest（合计用例数）
 │   └── install.sh        # 一键挂载到 profile
 ├── catalog.json          # collection 清单（hub collection 分类识别依据）
@@ -52,7 +52,7 @@ dsh plugin --profile headless add "C:/path/to/dsh-toolkit"
 # 脚本也支持 meta 模式（默认）与 dry-run：DRY_RUN=1 ./scripts/install.sh web all
 ```
 
-> ⚠️ 若 profile 已单独挂载过同名插件（tool-time/.../tool-regex），挂 meta 包会注册重名报错——
+> ⚠️ 若 profile 已单独挂载过同名插件（tool-time/.../tool-markdown），挂 meta 包会注册重名报错——
 > 此时用方式 B（逐包挂载）或先移除旧插件。meta apply 具备原子性（任一子插件失败时
 > 逆序回滚已注册工具，不残留部分状态）。
 
@@ -71,11 +71,11 @@ dsh --profile web --dump-config | grep tool-kit
 
 ```bash
 export DSH_MONOREPO=/c/Users/admin/.dsh/source/staging-20260808T121140Z   # 或作为第一个参数
-bash scripts/build-all.sh   # link-deps + 6 子包 + meta 包 tsc + 产物完整性验证（无 .ts 残留导入、6+1 个 lib/index.js）
+bash scripts/build-all.sh   # link-deps + 7 子包 + meta 包 tsc + 产物完整性验证（无 .ts 残留导入、7+1 个 lib/index.js）
 bash scripts/test-all.sh    # 7 子包 vitest 全量（392 用例）；任一失败整体非零退出
 ```
 
-> `prepack` 已指向 `build:all`（完整构建 6 子包 + meta），保证发布 tarball 含全部运行入口。
+> `prepack` 已指向 `build:all`（完整构建 7 子包 + meta），保证发布 tarball 含全部运行入口。
 
 
 ## 同步 vendored（子仓库有更新时）
