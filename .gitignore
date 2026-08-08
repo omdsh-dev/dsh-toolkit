@@ -1,0 +1,7 @@
+lib/
+node_modules/
+packages/*/lib/
+packages/*/node_modules/
+*.tsbuildinfo
+pnpm-lock.yaml
+pnpm-workspace.yaml

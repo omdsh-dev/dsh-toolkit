@@ -1,0 +1,4 @@
+# dsh bundle patch: inserts this plugin into a profile's layer stack (0806+).
+- insert:
+    - id: tool-calculator
+      name: '@deepseek-ai/dsh-tool-calculator'

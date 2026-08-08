@@ -1,0 +1,11 @@
+{
+  "collection": "dsh-toolkit",
+  "plugins": [
+    { "id": "dsh-tool-time", "source": "../dsh-tool-time", "version": "0.0.1" },
+    { "id": "dsh-tool-encoding", "source": "../dsh-tool-encoding", "version": "0.0.1" },
+    { "id": "dsh-tool-json", "source": "../dsh-tool-json", "version": "0.0.1" },
+    { "id": "dsh-tool-calculator", "source": "../dsh-tool-calculator", "version": "0.0.1" },
+    { "id": "dsh-tool-csv", "source": "../dsh-tool-csv", "version": "0.0.1" },
+    { "id": "dsh-tool-regex", "source": "../dsh-tool-regex", "version": "0.0.1" }
+  ]
+}
