@@ -7,6 +7,7 @@
     { "id": "dsh-tool-json", "type": "plugin", "description": "JSON 查询工具：JMESPath 子集", "source": "./packages/dsh-tool-json", "version": "0.0.1" },
     { "id": "dsh-tool-calculator", "type": "plugin", "description": "计算器工具：安全数学表达式求值", "source": "./packages/dsh-tool-calculator", "version": "0.0.1" },
     { "id": "dsh-tool-csv", "type": "plugin", "description": "CSV 工具：RFC 4180 解析/查询/统计", "source": "./packages/dsh-tool-csv", "version": "0.0.1" },
-    { "id": "dsh-tool-regex", "type": "plugin", "description": "正则工具：测试/提取/替换/静态解释", "source": "./packages/dsh-tool-regex", "version": "0.0.1" }
+    { "id": "dsh-tool-regex", "type": "plugin", "description": "正则工具：测试/提取/替换/静态解释", "source": "./packages/dsh-tool-regex", "version": "0.0.1" },
+    { "id": "dsh-tool-markdown", "type": "plugin", "description": "Markdown 工具：HTML↔Markdown / GFM 表格 / 目录生成", "source": "./packages/dsh-tool-markdown", "version": "0.0.1" }
   ]
 }

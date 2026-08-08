@@ -6,7 +6,7 @@ DSH 零依赖工具包 collection —— time / encoding / json / calculator / c
 
 ## 为什么
 
-dsh-external 组织仓库持续增长，单插件在 hub 中容易被淹没；collection 分类是辨识度最高的形态。本仓库把 6 个工具插件 **vendored 冻结**为发布态快照（各子仓库仍独立演进），meta 包 `@deepseek-ai/dsh-toolkit` 一次挂载、一行 patch，统一工程、统一测试、统一维护。
+dsh-external 组织仓库持续增长，单插件在 hub 中容易被淹没；collection 分类是辨识度最高的形态。本仓库把 7 个工具插件 **vendored 冻结**为发布态快照（各子仓库仍独立演进），meta 包 `@deepseek-ai/dsh-toolkit` 一次挂载、一行 patch，统一工程、统一测试、统一维护。
 
 ## 工具一览
 
@@ -18,18 +18,19 @@ dsh-external 组织仓库持续增长，单插件在 hub 中容易被淹没；co
 | `calculator` | 安全数学表达式求值（无 eval） | 31 |
 | `csv` | RFC 4180 解析 / 查询 / 统计（严格引号） | 50 |
 | `regex` | 测试 / 提取 / 替换 / 静态解释（worker 硬超时） | 63 |
-| **合计** | | **321** |
+| `markdown` | HTML↔Markdown / GFM 表格 / 目录生成（白名单安全） | 71 |
+| **合计** | | **392** |
 
 ## 架构
 
 ```
 dsh-toolkit/
-├── src/index.ts          # meta 包：相对路径动态导入 6 个子包 apply()，聚合注册
+├── src/index.ts          # meta 包：相对路径动态导入 7 个子包 apply()，聚合注册
 ├── packages/dsh-tool-*   # vendored 子包（发布态快照，name 保持 @deepseek-ai/dsh-tool-*）
 ├── scripts/
 │   ├── link-deps.sh      # 构建期 junction（cordis → vendor/cordis，dsh-tools → packages/core/tools）
 │   ├── build-all.sh      # 一键构建 6 子包 + meta 包（tsc）
-│   ├── test-all.sh       # 一键跑 6 子包 vitest（合计用例数）
+│   ├── test-all.sh       # 一键跑 7 子包 vitest（合计用例数）
 │   └── install.sh        # 一键挂载到 profile
 ├── catalog.json          # collection 清单（hub collection 分类识别依据）
 └── tsconfig.base.json    # 共享编译配置（固化踩坑经验）
@@ -71,7 +72,7 @@ dsh --profile web --dump-config | grep tool-kit
 ```bash
 export DSH_MONOREPO=/c/Users/admin/.dsh/source/staging-20260808T121140Z   # 或作为第一个参数
 bash scripts/build-all.sh   # link-deps + 6 子包 + meta 包 tsc + 产物完整性验证（无 .ts 残留导入、6+1 个 lib/index.js）
-bash scripts/test-all.sh    # 6 子包 vitest 全量（321 用例）；任一失败整体非零退出
+bash scripts/test-all.sh    # 7 子包 vitest 全量（392 用例）；任一失败整体非零退出
 ```
 
 > `prepack` 已指向 `build:all`（完整构建 6 子包 + meta），保证发布 tarball 含全部运行入口。
