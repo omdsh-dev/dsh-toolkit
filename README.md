@@ -46,12 +46,14 @@ dsh-toolkit/
 dsh plugin --profile web add "C:/path/to/dsh-toolkit"
 dsh plugin --profile headless add "C:/path/to/dsh-toolkit"
 
-# 方式 B：脚本逐个挂载子包
-./scripts/install.sh web
+# 方式 B：脚本逐个挂载子包（与已有独立插件共存时用）
+./scripts/install.sh web all
+# 脚本也支持 meta 模式（默认）与 dry-run：DRY_RUN=1 ./scripts/install.sh web all
 ```
 
-> ⚠️ 若 profile 已单独挂载过同名插件（tool-time/.../tool-regex），先移除再挂 toolkit——
-> 工具注册重名会报错（本仓库即为此场景：开发 profile 保持独立插件链接）。
+> ⚠️ 若 profile 已单独挂载过同名插件（tool-time/.../tool-regex），挂 meta 包会注册重名报错——
+> 此时用方式 B（逐包挂载）或先移除旧插件。meta apply 具备原子性（任一子插件失败时
+> 逆序回滚已注册工具，不残留部分状态）。
 
 ## 验证
 
@@ -64,10 +66,16 @@ dsh --profile web --dump-config | grep tool-kit
 
 ## 构建与测试
 
+**前置条件**（审查 TK-02 修复）：脚本不再内置本机路径，必须显式提供 DSH monorepo 根：
+
 ```bash
-bash scripts/build-all.sh   # link-deps + 6 子包 + meta 包 tsc 零错误
-bash scripts/test-all.sh    # 6 子包 vitest 全量（321 用例）
+export DSH_MONOREPO=/c/Users/admin/.dsh/source/staging-20260808T121140Z   # 或作为第一个参数
+bash scripts/build-all.sh   # link-deps + 6 子包 + meta 包 tsc + 产物完整性验证（无 .ts 残留导入、6+1 个 lib/index.js）
+bash scripts/test-all.sh    # 6 子包 vitest 全量（321 用例）；任一失败整体非零退出
 ```
+
+> `prepack` 已指向 `build:all`（完整构建 6 子包 + meta），保证发布 tarball 含全部运行入口。
+
 
 ## 同步 vendored（子仓库有更新时）
 

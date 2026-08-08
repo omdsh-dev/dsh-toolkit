@@ -11,7 +11,7 @@
     "build:all": "bash scripts/build-all.sh",
     "test:all": "bash scripts/test-all.sh",
     "link-deps": "bash scripts/link-deps.sh",
-    "prepack": "npm run build"
+    "prepack": "npm run build:all"
   },
   "peerDependencies": {
     "@deepseek-ai/dsh-tools": "*",

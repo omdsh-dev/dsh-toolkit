@@ -1,11 +1,12 @@
 {
   "collection": "dsh-toolkit",
+  "schema": "dsh-external/hub collection manifest v1",
   "plugins": [
-    { "id": "dsh-tool-time", "source": "../dsh-tool-time", "version": "0.0.1" },
-    { "id": "dsh-tool-encoding", "source": "../dsh-tool-encoding", "version": "0.0.1" },
-    { "id": "dsh-tool-json", "source": "../dsh-tool-json", "version": "0.0.1" },
-    { "id": "dsh-tool-calculator", "source": "../dsh-tool-calculator", "version": "0.0.1" },
-    { "id": "dsh-tool-csv", "source": "../dsh-tool-csv", "version": "0.0.1" },
-    { "id": "dsh-tool-regex", "source": "../dsh-tool-regex", "version": "0.0.1" }
+    { "id": "dsh-tool-time", "type": "plugin", "description": "时间工具：ISO 8601 / 时区 / 日历运算 / 时长差", "source": "./packages/dsh-tool-time", "version": "0.0.1" },
+    { "id": "dsh-tool-encoding", "type": "plugin", "description": "编码/哈希工具：base64 / url / hex / hash / UUID", "source": "./packages/dsh-tool-encoding", "version": "0.0.1" },
+    { "id": "dsh-tool-json", "type": "plugin", "description": "JSON 查询工具：JMESPath 子集", "source": "./packages/dsh-tool-json", "version": "0.0.1" },
+    { "id": "dsh-tool-calculator", "type": "plugin", "description": "计算器工具：安全数学表达式求值", "source": "./packages/dsh-tool-calculator", "version": "0.0.1" },
+    { "id": "dsh-tool-csv", "type": "plugin", "description": "CSV 工具：RFC 4180 解析/查询/统计", "source": "./packages/dsh-tool-csv", "version": "0.0.1" },
+    { "id": "dsh-tool-regex", "type": "plugin", "description": "正则工具：测试/提取/替换/静态解释", "source": "./packages/dsh-tool-regex", "version": "0.0.1" }
   ]
 }

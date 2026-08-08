@@ -1,19 +1,30 @@
 #!/bin/sh
-# 一键构建：6 个子包 + meta 包（tsc），验证产物相对导入为 .js。
+# 一键构建：6 个子包 + meta 包（tsc），并验证产物完整性（审查 TK-01/TK-07）。
+#
+# 前置条件：DSH_MONOREPO 环境变量或第一个参数（见 link-deps.sh）。
 set -eu
-ROOT_DIR="${1:-/c/Users/admin/.dsh/source/staging-20260808T121140Z}"
-MONOREPO="$(printf '%s' "$ROOT_DIR" | sed -e 's|^/\([a-zA-Z]\)/|\u\1:/|' -e 's|\\|/|g')"
-TSC="$MONOREPO/node_modules/typescript/bin/tsc"
+MONOREPO="${DSH_MONOREPO:-${1:-}}"
+TSC_ROOT="$(printf '%s' "$MONOREPO" | sed -e 's|^/\([a-zA-Z]\)/|\u\1:/|' -e 's|\\|/|g' | sed 's|/$||')/node_modules/typescript/bin/tsc"
 
-./scripts/link-deps.sh "$ROOT_DIR" >/dev/null
+./scripts/link-deps.sh "${MONOREPO}" >/dev/null
 
 for P in packages/dsh-tool-*; do
   echo "== build $P"
-  (cd "$P" && node "$TSC" -p tsconfig.json) || exit 1
+  (cd "$P" && node "$TSC_ROOT" -p tsconfig.json) || exit 1
 done
 echo "== build meta (dsh-toolkit)"
-node "$TSC" -p tsconfig.json || exit 1
+node "$TSC_ROOT" -p tsconfig.json || exit 1
 
-COUNT=$(ls packages/*/lib/index.js | wc -l)
-echo "ok: $COUNT 个子包 + meta 包构建完成"
-grep -l 'from "./' packages/*/lib/index.js >/dev/null 2>&1 || true
+# 产物完整性验证（TK-01/TK-07）：
+# 1) 根 + 6 个子包的 lib/index.js 必须存在
+EXPECTED="packages/dsh-tool-calculator packages/dsh-tool-csv packages/dsh-tool-encoding packages/dsh-tool-json packages/dsh-tool-regex packages/dsh-tool-time"
+for P in $EXPECTED; do
+  [ -f "$P/lib/index.js" ] || { echo "error: missing $P/lib/index.js" >&2; exit 1; }
+done
+[ -f "lib/index.js" ] || { echo "error: missing meta lib/index.js" >&2; exit 1; }
+# 2) 产物中不得残留 .ts 相对导入
+if grep -rEn 'from "\./[^"]*\.ts"|import\("[^"]*\.ts"\)' "$EXPECTED" lib 2>/dev/null; then
+  echo "error: .ts imports left in build output" >&2
+  exit 1
+fi
+echo "ok: 6 个子包 + meta 包构建完成，产物完整"
