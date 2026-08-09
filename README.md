@@ -6,7 +6,9 @@ DSH 零依赖工具包 collection —— time / encoding / json / calculator / c
 
 ## 为什么
 
-dsh-external 组织仓库持续增长，单插件在 hub 中容易被淹没；collection 分类是辨识度最高的形态。本仓库把 8 个工具插件 **vendored 冻结**为发布态快照（各子仓库仍独立演进），meta 包 `@deepseek-ai/dsh-toolkit` 一次挂载、一行 patch，统一工程、统一测试、统一维护。
+dsh-external 组织仓库持续增长，单插件在 hub 中容易被淹没；collection 分类是辨识度最高的形态。本仓库把 8 个工具插件 **vendored 冻结**为发布态快照（各子仓库仍独立演进），统一工程、统一测试、统一维护。
+
+**定位（官方 Profile Bundle 生态方向）**：本仓库是 **collection 与安装辅助仓库**——每个子包都是可独立安装/启用/禁用/卸载的 bundle（`dsh plugin --profile <p> add <子包>`）；collection 提供目录、清单与批量安装脚本。meta 包 `@deepseek-ai/dsh-toolkit` 保留为**可选**的原子挂载模型（见下文两种运行模型）。
 
 ## 工具一览
 
@@ -32,7 +34,10 @@ dsh-toolkit/
 │   ├── link-deps.sh      # 构建期 junction（cordis → vendor/cordis，dsh-tools → packages/core/tools）
 │   ├── build-all.sh      # 一键构建 8 子包 + meta 包（tsc）
 │   ├── test-all.sh       # 一键跑 8 子包 vitest（合计用例数）
-│   └── install.sh        # 一键挂载到 profile
+│   ├── install.sh        # meta / 逐包两种挂载模式（含 dry-run）
+│   ├── install-web.sh    # 独立 bundle 批量安装 → web profile
+│   ├── install-headless.sh # 独立 bundle 批量安装 → headless profile
+│   └── install-all.sh    # web + headless 都装
 ├── catalog.json          # collection 清单（hub collection 分类识别依据）
 └── tsconfig.base.json    # 共享编译配置（固化踩坑经验）
 ```
@@ -43,28 +48,51 @@ dsh-toolkit/
 
 ## 安装
 
-```bash
-# 方式 A：meta 包一行挂载（推荐）
-dsh plugin --profile web add "C:/path/to/dsh-toolkit"
-dsh plugin --profile headless add "C:/path/to/dsh-toolkit"
+### 独立 bundle 模型（推荐）
 
-# 方式 B：脚本逐个挂载子包（与已有独立插件共存时用）
-./scripts/install.sh web all
-# 脚本也支持 meta 模式（默认）与 dry-run：DRY_RUN=1 ./scripts/install.sh web all
+每个子包独立安装、启用、禁用、卸载：
+
+```sh
+# 安装单个工具到 web profile
+dsh plugin --profile web add "C:/path/to/dsh-toolkit/packages/dsh-tool-csv"
+# 一次性任务（headless）profile
+dsh plugin --profile headless add "C:/path/to/dsh-toolkit/packages/dsh-tool-diff"
 ```
 
-> ⚠️ 若 profile 已单独挂载过同名插件（tool-time/.../tool-markdown），挂 meta 包会注册重名报错——
-> 此时用方式 B（逐包挂载）或先移除旧插件。meta apply 具备原子性（任一子插件失败时
+批量安装（collection 辅助脚本，幂等——重复执行不会重复添加）：
+
+```sh
+./scripts/install-web.sh       # 全部 8 工具 → web profile
+./scripts/install-headless.sh  # 全部 8 工具 → headless profile（dsh run 使用面）
+./scripts/install-all.sh       # 两个 profile 都装
+```
+
+验证与运行：
+
+```sh
+dsh --profile web --dump-config | grep tool-csv     # 行存在即安装成功
+dsh run "使用 csv 工具解析 'a,b\n1,2'"               # headless 端到端
+```
+
+> ⚠️ web 与 headless 是**不同 profile**：web 安装不会自动覆盖 headless；`dsh run` 默认使用 headless。
+> Windows 路径使用正斜杠（`C:/...`）。
+
+### meta bundle 模型（可选）
+
+需要一次原子挂载全部工具时，挂载根 meta 包：
+
+```sh
+dsh plugin --profile web add "C:/path/to/dsh-toolkit"
+dsh --profile web --dump-config | grep tool-kit
+```
+
+> ⚠️ 若 profile 已单独挂载过同名插件（tool-time/.../tool-diff），挂 meta 包会注册重名报错——
+> 此时先移除旧插件，或用独立 bundle 模型。meta apply 具备原子性（任一子插件失败时
 > 逆序回滚已注册工具，不残留部分状态）。
 
-## 验证
+### 手动安装与旧版本兼容
 
-```bash
-dsh --profile web --dump-config | grep tool-kit
-# # == @deepseek-ai/dsh-toolkit
-# - id: tool-kit
-#   name: '@deepseek-ai/dsh-toolkit'
-```
+仅适用于不支持 Profile Bundle 的旧快照或插件开发调试环境（本地 junction/symlink、手动编辑 profile 层）。
 
 ## 构建与测试
 
@@ -76,7 +104,7 @@ bash scripts/build-all.sh   # link-deps + 8 子包 + meta 包 tsc + 产物完整
 bash scripts/test-all.sh    # 8 子包 vitest 全量（516 用例）；任一失败整体非零退出
 ```
 
-> `prepack` 已指向 `build:all`（完整构建 7 子包 + meta），保证发布 tarball 含全部运行入口。
+> `prepack` 已指向 `build:all`（完整构建 8 子包 + meta），保证发布 tarball 含全部运行入口。
 
 
 ## 同步 vendored（子仓库有更新时）
