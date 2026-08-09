@@ -1,6 +1,6 @@
 {
-  "name": "@deepseek-ai/dsh-toolkit",
-  "description": "DSH zero-dependency toolkit collection: time / encoding / json / calculator / csv / regex / markdown / diff in one entry point",
+  "name": "@deepseek-ai/dsh-tool-diff",
+  "description": "DSH diff tool: structured comparison of text/JSON/CSV/Markdown plus unified diff generation and in-memory patch validation. Zero-dependency, read-only.",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -8,10 +8,8 @@
   "types": "lib/types/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "build:all": "bash scripts/build-all.sh",
-    "test:all": "bash scripts/test-all.sh",
-    "link-deps": "bash scripts/link-deps.sh",
-    "prepack": "npm run build:all"
+    "prepack": "npm run build",
+    "test": "vitest run tests"
   },
   "peerDependencies": {
     "@deepseek-ai/dsh-tools": "*",
@@ -33,8 +31,6 @@
   "files": [
     "lib",
     "src",
-    "packages",
-    "scripts",
     "cordis.patch.yml"
   ]
 }

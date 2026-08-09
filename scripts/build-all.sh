@@ -1,5 +1,5 @@
 #!/bin/sh
-# 一键构建：7 个子包 + meta 包（tsc），并验证产物完整性（审查 TK-01/TK-07）。
+# 一键构建：8 个子包 + meta 包（tsc），并验证产物完整性（审查 TK-01/TK-07）。
 #
 # 前置条件：DSH_MONOREPO 环境变量或第一个参数（见 link-deps.sh）。
 set -eu
@@ -17,7 +17,7 @@ node "$TSC_ROOT" -p tsconfig.json || exit 1
 
 # 产物完整性验证（TK-01/TK-07）：
 # 1) 根 + 7 个子包的 lib/index.js 必须存在
-EXPECTED="packages/dsh-tool-calculator packages/dsh-tool-csv packages/dsh-tool-encoding packages/dsh-tool-json packages/dsh-tool-markdown packages/dsh-tool-regex packages/dsh-tool-time"
+EXPECTED="packages/dsh-tool-calculator packages/dsh-tool-csv packages/dsh-tool-diff packages/dsh-tool-encoding packages/dsh-tool-json packages/dsh-tool-markdown packages/dsh-tool-regex packages/dsh-tool-time"
 for P in $EXPECTED; do
   [ -f "$P/lib/index.js" ] || { echo "error: missing $P/lib/index.js" >&2; exit 1; }
 done
@@ -27,4 +27,4 @@ if grep -rEn 'from "\./[^"]*\.ts"|import\("[^"]*\.ts"\)' "$EXPECTED" lib 2>/dev/
   echo "error: .ts imports left in build output" >&2
   exit 1
 fi
-echo "ok: 7 个子包 + meta 包构建完成，产物完整"
+echo "ok: 8 个子包 + meta 包构建完成，产物完整"
