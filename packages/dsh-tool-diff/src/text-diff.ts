@@ -8,7 +8,7 @@
  *   无时间戳（可复现）；末尾无换行输出 `\ No newline at end of file`。
  */
 
-import { MAX_LINES, DEFAULT_MAX_CHANGES } from './limits.ts'
+import { MAX_LINES } from './limits.ts'
 
 export interface Line {
   text: string
@@ -37,14 +37,15 @@ function hashLine(text: string): number {
 /** 归一化（按选项）后比较两行是否相等。 */
 function lineEqual(a: Line, b: Line, options: DiffOptions): boolean {
   if (a.hash === b.hash && a.text === b.text) return true
-  let at = a.text
-  let bt = b.text
-  if (options.ignoreCase) { at = at.toLowerCase(); bt = bt.toLowerCase() }
-  if (options.ignoreWhitespace) {
-    at = at.replace(/[ \t\r\n\f]+/g, ' ').trim()
-    bt = bt.replace(/[ \t\r\n\f]+/g, ' ').trim()
-  }
-  return at === bt
+  return normKey(a.text, options) === normKey(b.text, options)
+}
+
+/** 按选项归一化的比较键（D-06 修复：快速拒绝与 lineEqual 使用同一等价关系）。 */
+function normKey(text: string, options: DiffOptions): string {
+  let t = text
+  if (options.ignoreCase) t = t.toLowerCase()
+  if (options.ignoreWhitespace) t = t.replace(/[ \t\r\n\f]+/g, ' ').trim()
+  return t
 }
 
 /** 把文本拆成带 hash 的行（保留末尾换行信息）。空文本：无行、无末尾换行。 */
@@ -106,12 +107,13 @@ export function diffLines(before: Line[], after: Line[], options: DiffOptions = 
       ...after.slice(pre, m - suf).map(l => ({ type: 'insert' as const, text: l.text })),
     ]
   } else {
-    // hash 快速拒绝：剩余两侧无公共行 → 回退
-    const set = new Set<number>()
-    for (let i = 0; i < mp; i++) set.add(after[pre + i]!.hash)
+    // 快速拒绝：剩余两侧无公共行（按与 lineEqual 相同的归一化键）→ 回退。
+    // D-06 修复：ignore 选项下使用归一化键而非原始 hash，避免漏判归一化后相等的公共行。
+    const set = new Set<string>()
+    for (let i = 0; i < mp; i++) set.add(normKey(after[pre + i]!.text, options))
     let common = false
     for (let i = 0; i < np; i++) {
-      if (set.has(before[pre + i]!.hash)) { common = true; break }
+      if (set.has(normKey(before[pre + i]!.text, options))) { common = true; break }
     }
     if (!common) {
       middle = [
@@ -222,7 +224,22 @@ export function lineStats(ops: DiffOp[]): { addedLines: number; removedLines: nu
   return { addedLines, removedLines, unchangedLines }
 }
 
-/** 渲染 unified diff（无时间戳，可复现）。 */
+/**
+ * 实际渲染用的 op 序列：仅末尾换行差异（行级全 equal 但字节不同）时，
+ * 把最后一行（或空文件占位）合成 delete+insert，使 diff 文本、stats、equal 三者同源。
+ */
+export function effectiveOps(ops: DiffOp[], beforeTrailing: boolean, afterTrailing: boolean): DiffOp[] {
+  if (ops.every(o => o.type === 'equal') && beforeTrailing !== afterTrailing) {
+    if (ops.length > 0) {
+      const last = ops[ops.length - 1]!
+      return [...ops.slice(0, -1), { type: 'delete', text: last.text }, { type: 'insert', text: last.text }]
+    }
+    return [{ type: 'delete', text: '' }, { type: 'insert', text: '' }]
+  }
+  return ops
+}
+
+/** 渲染 unified diff（无时间戳，可复现，GNU 标记位置语义）。 */
 export function renderUnified(
   beforeLabel: string,
   afterLabel: string,
@@ -233,16 +250,25 @@ export function renderUnified(
   beforeTrailing: boolean,
   afterTrailing: boolean,
 ): string {
-  if (ops.every(o => o.type === 'equal')) return ''
+  if (ops.every(o => o.type === 'equal') && beforeTrailing === afterTrailing) return ''
+  const work = effectiveOps(ops, beforeTrailing, afterTrailing)
   const out: string[] = [`--- ${beforeLabel}`, `+++ ${afterLabel}`]
+
+  // 两侧最后一行在 op 序列中的下标（\ No newline 标记紧跟其后）
+  let lastBeforeIdx = -1
+  let lastAfterIdx = -1
+  work.forEach((o, i) => {
+    if (o.type !== 'insert') lastBeforeIdx = i
+    if (o.type !== 'delete') lastAfterIdx = i
+  })
 
   // 按 context 合并 hunk
   const changeIdx: number[] = []
-  ops.forEach((o, i) => { if (o.type !== 'equal') changeIdx.push(i) })
+  work.forEach((o, i) => { if (o.type !== 'equal') changeIdx.push(i) })
   const hunks: Array<{ start: number; end: number }> = []
   for (const i of changeIdx) {
     const start = Math.max(0, i - context)
-    const end = Math.min(ops.length - 1, i + context)
+    const end = Math.min(work.length - 1, i + context)
     if (hunks.length > 0 && start <= hunks[hunks.length - 1]!.end + 1) {
       hunks[hunks.length - 1]!.end = end
     } else {
@@ -251,33 +277,38 @@ export function renderUnified(
   }
 
   for (const hunk of hunks) {
-    // 行号：计算 hunk 起点对应的 old/new 位置
+    // 行号：计算 hunk 起点对应的 old/new 位置（空文件起始行号为 0）
     let oldLine = 1
     let newLine = 1
     for (let i = 0; i < hunk.start; i++) {
-      const t = ops[i]!.type
+      const t = work[i]!.type
       if (t !== 'insert') oldLine++
       if (t !== 'delete') newLine++
     }
+    if (before.length === 0) oldLine = 0
+    if (after.length === 0) newLine = 0
     let oldCount = 0
     let newCount = 0
     for (let i = hunk.start; i <= hunk.end; i++) {
-      const t = ops[i]!.type
+      const t = work[i]!.type
       if (t !== 'insert') oldCount++
       if (t !== 'delete') newCount++
     }
     out.push(`@@ -${oldLine},${oldCount} +${newLine},${newCount} @@`)
     for (let i = hunk.start; i <= hunk.end; i++) {
-      const o = ops[i]!
+      const o = work[i]!
       if (o.type === 'equal') out.push(` ${o.text}`)
       else if (o.type === 'delete') out.push(`-${o.text}`)
       else out.push(`+${o.text}`)
+      if (i === lastBeforeIdx && !beforeTrailing && before.length > 0) {
+        out.push('\\ No newline at end of file')
+      }
+      if (i === lastAfterIdx && !afterTrailing && after.length > 0) {
+        out.push('\\ No newline at end of file')
+      }
     }
   }
 
-  // 末尾无换行标记
-  if (!beforeTrailing && before.length > 0) out.push('\\ No newline at end of file')
-  if (!afterTrailing && after.length > 0) out.push('\\ No newline at end of file')
   return out.join('\n') + '\n'
 }
 
@@ -291,9 +322,8 @@ export function unifiedDiff(
   const a = splitLines(beforeText)
   const b = splitLines(afterText)
   const ops = diffLines(a.lines, b.lines, options)
-  const stats = lineStats(ops)
+  // stats 与渲染同源：仅末尾换行差异时按合成后的 delete+insert 计
+  const stats = lineStats(effectiveOps(ops, a.trailingNewline, b.trailingNewline))
   const diff = renderUnified('before', 'after', a.lines, b.lines, ops, context, a.trailingNewline, b.trailingNewline)
   return { diff, ops, stats }
 }
-
-export { DEFAULT_MAX_CHANGES }

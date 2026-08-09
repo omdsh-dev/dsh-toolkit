@@ -126,6 +126,46 @@ export function jsonDiff(beforeJson: unknown, afterJson: unknown, options: JsonD
 }
 
 /**
+ * 扫描同一对象内重复键名（D-10 修复）：JSON.parse 会静默取最后值，
+ * 这里用 O(n) 状态机在 parse 前记录重复键，随输出报告，不让结构化 diff 静默丢信息。
+ */
+export function scanDuplicateKeys(text: string): string[] {
+  const dups: string[] = []
+  const stack: Array<{ isObj: boolean; keys: Set<string> }> = []
+  let inString = false
+  let escaped = false
+  let expectingKey = false
+  let buf = ''
+  const top = () => stack[stack.length - 1]
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i]!
+    if (inString) {
+      if (escaped) { escaped = false; continue }
+      if (ch === '\\') { escaped = true; continue }
+      if (ch === '"') {
+        inString = false
+        if (expectingKey && top()?.isObj) {
+          const t = top()!
+          if (t.keys.has(buf) && !dups.includes(buf)) dups.push(buf)
+          t.keys.add(buf)
+        }
+        expectingKey = false
+        continue
+      }
+      if (expectingKey) buf += ch
+      continue
+    }
+    if (ch === '"') { inString = true; buf = ''; continue }
+    if (ch === '{') { stack.push({ isObj: true, keys: new Set() }); expectingKey = true; continue }
+    if (ch === '[') { stack.push({ isObj: false, keys: new Set() }); expectingKey = false; continue }
+    if (ch === '}' || ch === ']') { stack.pop(); expectingKey = false; continue }
+    if (ch === ':') { expectingKey = false; continue }
+    if (ch === ',') { expectingKey = top()?.isObj === true; continue }
+  }
+  return dups
+}
+
+/**
  * 扫描原始 JSON 文本的最大嵌套深度（跳过字符串字面量，O(n) 非递归）。
  * 用于在 JSON.parse 之前拦截超深输入（防调用栈溢出与超时）。
  */
@@ -160,6 +200,7 @@ export function jsonDiffText(beforeText: string, afterText: string, options: Jso
   changes: JsonChange[]
   beforeParsed: unknown
   afterParsed: unknown
+  duplicateKeys: { before: string[]; after: string[] }
 } {
   assertInputSize(beforeText, 'before')
   assertInputSize(afterText, 'after')
@@ -169,6 +210,10 @@ export function jsonDiffText(beforeText: string, afterText: string, options: Jso
   }
   if (scanJsonDepth(afterText) > maxDepth) {
     throw new Error(`diff: after json nesting exceeds ${maxDepth} levels`)
+  }
+  const duplicateKeys = {
+    before: scanDuplicateKeys(beforeText),
+    after: scanDuplicateKeys(afterText),
   }
   let beforeParsed: unknown
   let afterParsed: unknown
@@ -183,5 +228,5 @@ export function jsonDiffText(beforeText: string, afterText: string, options: Jso
     throw new Error(`diff: after is not valid JSON (${(e as Error).message})`)
   }
   const changes = jsonDiff(beforeParsed, afterParsed, options)
-  return { changes, beforeParsed, afterParsed }
+  return { changes, beforeParsed, afterParsed, duplicateKeys }
 }

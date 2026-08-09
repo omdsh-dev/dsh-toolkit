@@ -42,6 +42,8 @@ export interface MdCodeBlockChange {
   language: string
   beforeLines: number
   afterLines: number
+  /** 内容是否变化（语言/行数相同但代码内容不同，D-04 修复） */
+  changed?: boolean
 }
 
 export interface MdReport {
@@ -324,11 +326,18 @@ export function markdownDiff(beforeText: string, afterText: string, options: MdD
       const b = na[ai]!
       if (!blockEqual(a, b, options)) {
         if (a.kind === 'fence') {
+          // D-04 修复：语言/行数/内容任一变化都进入 codeBlockChanges，
+          // 同语言同行数但内容不同 → changed:true（否则 equal 会漏报）
           const aLines = a.text.split('\n').length
           const bLines = b.text.split('\n').length
-          if ((a.language ?? '') !== (b.language ?? '') || aLines !== bLines) {
-            codeBlockChanges.push({ language: b.language ?? '', beforeLines: aLines, afterLines: bLines })
-          }
+          const langChanged = (a.language ?? '') !== (b.language ?? '')
+          const linesChanged = aLines !== bLines
+          codeBlockChanges.push({
+            language: b.language ?? '',
+            beforeLines: aLines,
+            afterLines: bLines,
+            ...(!langChanged && !linesChanged ? { changed: true } : {}),
+          })
         } else {
           blockChanges.push({
             op: 'replace',

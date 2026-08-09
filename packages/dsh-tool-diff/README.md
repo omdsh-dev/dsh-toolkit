@@ -47,8 +47,8 @@ Agent 需要对比两份内容（配置片段、API 响应、表格、文档修�
 | `context` | integer | | unified 上下文行数，默认 3，范围 0..20 |
 | `key` | string | | CSV 主键列名或 1-based 索引；缺省 → 位置比较 |
 | `delimiter` | string | | CSV 分隔符，默认 `,`，单字符或 `tab` |
-| `ignoreWhitespace` | boolean | | 比较时忽略空白差异（text/csv/markdown） |
-| `ignoreCase` | boolean | | 比较时忽略大小写 |
+| `ignoreWhitespace` | boolean | | 比较时忽略空白差异（text/csv/markdown）；**patch action 拒绝**（精确文本协议） |
+| `ignoreCase` | boolean | | 比较时忽略大小写（text/json/csv/markdown）；**patch action 拒绝** |
 | `sortKeys` | boolean | | JSON 键排序，默认 true |
 | `maxChanges` | integer | | 最大报告变更数，默认 1000，硬顶 10000 |
 
@@ -64,11 +64,13 @@ Agent 需要对比两份内容（配置片段、API 响应、表格、文档修�
 
 ## 设计要点
 
-- **行级 Myers**：O(ND) 迭代实现（非递归），trace 回溯；公共前后缀修剪后在小规模上运行，保证内存与时间有界
-- **CSV 双模式**：提供 `key` 且表头存在 → keyed（行顺序无关）；否则 positional（按数据行号）。重复 key 不静默覆盖，进 `duplicateKeys` 且 `equal=false`
-- **Markdown 块对齐**：按块类型 token 做 Myers，同型块内容变化 → `replace`，结构增删 → `add/remove`；标题按父路径+级别匹配，同路径同级别文本变化 → `rename`
-- **JSON 深度防线**：`JSON.parse` 之前先做 O(n) 非递归括号扫描（跳过字符串字面量），超 64 层直接报错
-- **可复现输出**：unified diff 无时间戳；`sortKeys` 默认 true 使变更列表稳定
+- **行级 Myers**：O(ND) 迭代实现（非递归），trace 回溯；公共前后缀修剪后在小规模上运行，保证内存与时间有界；快速拒绝使用与 `lineEqual` 相同的归一化键（ignore 选项下不漏判公共行）
+- **CSV 双模式**：提供 `key` 且表头存在 → keyed（行顺序无关）；否则 positional（按数据行号）。**before/after 两侧**重复 key 都进 `duplicateKeys` 且 `equal=false`，重复 key 的行不参与匹配（结果确定）；空字符串 key 与缺失 key（`<missing-key>`）不混淆
+- **Markdown 块对齐**：按块类型 token 做 Myers，同型块内容变化 → `replace`，结构增删 → `add/remove`；标题按父路径+级别匹配，同路径同级别文本变化 → `rename`；代码块语言/行数/内容任一变化都进 `codeBlockChanges`（内容变化带 `changed:true`）
+- **JSON 深度防线**：`JSON.parse` 之前先做 O(n) 非递归括号扫描（跳过字符串字面量），超 64 层直接报错；**重复键**由状态机扫描并随输出报告（`duplicateKeys.before/after`），不静默丢信息
+- **patch 语义**：`equal` = 两侧在精确行 + 末尾换行语义下相等（与 `valid` 无关）；`valid` 只表示"生成的 patch 可从 before 应用到 after"；hunk 坐标（old/new、顺序、重叠、间隙）严格校验；patch 被截断时 `valid:false` + `patchComplete:false`
+- **Unicode**：孤立 surrogate 在入口被拒绝（`invalid Unicode`）
+- **可复现输出**：unified diff 无时间戳；`sortKeys` 默认 true 使变更列表稳定；所有 action 最终 JSON 信封 ≤ 64KiB（契约断言）
 
 ## 构建与测试
 
@@ -76,7 +78,7 @@ Agent 需要对比两份内容（配置片段、API 响应、表格、文档修�
 # 构建（零依赖，仅需 monorepo 的 tsc）
 node <monorepo>/node_modules/typescript/bin/tsc -p tsconfig.json
 
-# 测试（vitest，94 个用例）
+# 测试（vitest，124 个用例）
 node <monorepo>/node_modules/vitest/vitest.mjs run tests
 ```
 

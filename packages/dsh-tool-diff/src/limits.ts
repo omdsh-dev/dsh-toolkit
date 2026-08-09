@@ -33,6 +33,16 @@ export function assertInputSize(text: string, label: string): void {
   }
 }
 
+/**
+ * 校验文本为合法 Unicode（无孤立 surrogate，D-11 修复）。
+ * 孤立 surrogate 既不是合法 UTF-8，也会在后续序列化/截断中产生不一致。
+ */
+export function assertWellFormedText(text: string, label: string): void {
+  if (!text.isWellFormed()) {
+    throw new Error(`diff: ${label} contains invalid Unicode (isolated surrogate)`)
+  }
+}
+
 /** 校验输出字节数；超限抛 diff: 错误（不静默截断输出——变更列表截断走 maxChanges）。 */
 export function assertOutputSize(text: string): void {
   if (utf8ByteLength(text) > MAX_OUTPUT_BYTES) {

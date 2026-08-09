@@ -140,4 +140,42 @@ describe('renderUnified', () => {
     expect(r.diff).toContain('+++ after')
     expect(r.diff).toContain('+c')
   })
+
+  it('仅末尾换行差异不算相等（a vs a\\n），stats 与 diff 同源', () => {
+    const r = unifiedDiff('a', 'a\n')
+    expect(r.diff).not.toBe('')
+    expect(r.diff).toContain('-a')
+    expect(r.diff).toContain('\\ No newline at end of file')
+    expect(r.stats.addedLines).toBe(1)
+    expect(r.stats.removedLines).toBe(1)
+    expect(r.stats.unchangedLines).toBe(0)
+  })
+
+  it('空 vs 空行：仅插入 1 行', () => {
+    const r = unifiedDiff('', '\n')
+    expect(r.stats.addedLines).toBe(1)
+    expect(r.stats.removedLines).toBe(0)
+  })
+
+  it('\\ No newline 标记紧跟两侧最后一行（GNU 位置语义）', () => {
+    // 删除行场景：before 最后一行 -b 后紧跟 before 标记
+    const r = unifiedDiff('a\nb', 'a\nX')
+    const lines = r.diff.split('\n')
+    const bIdx = lines.indexOf('-b')
+    expect(bIdx).toBeGreaterThan(0)
+    expect(lines[bIdx + 1]).toBe('\\ No newline at end of file')
+    // 上下文行场景：before 最后一行是上下文 ' b'，标记跟其后
+    const r2 = unifiedDiff('a\nb', 'a\nb\nc')
+    const lines2 = r2.diff.split('\n')
+    const ctxIdx = lines2.indexOf(' b')
+    expect(lines2[ctxIdx + 1]).toBe('\\ No newline at end of file')
+    // after 侧最后一行 +c 后紧跟 after 标记
+    const cIdx = lines2.indexOf('+c')
+    expect(lines2[cIdx + 1]).toBe('\\ No newline at end of file')
+  })
+
+  it('空文件起始行号为 0（@@ -0,0）', () => {
+    const r = unifiedDiff('', 'x\ny')
+    expect(r.diff).toContain('@@ -0,0 +1,2 @@')
+  })
 })

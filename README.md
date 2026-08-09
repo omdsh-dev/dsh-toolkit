@@ -19,8 +19,8 @@ dsh-external 组织仓库持续增长，单插件在 hub 中容易被淹没；co
 | `csv` | RFC 4180 解析 / 查询 / 统计（严格引号） | 50 |
 | `regex` | 测试 / 提取 / 替换 / 静态解释（worker 硬超时） | 63 |
 | `markdown` | HTML↔Markdown / GFM 表格 / 目录生成（白名单安全） | 71 |
-| `diff` | 文本/JSON/CSV/Markdown 结构化比较与 unified diff（只读） | 94 |
-| **合计** | | **486** |
+| `diff` | 文本/JSON/CSV/Markdown 结构化比较与 unified diff（只读） | 124 |
+| **合计** | | **516** |
 
 ## 架构
 
@@ -73,7 +73,7 @@ dsh --profile web --dump-config | grep tool-kit
 ```bash
 export DSH_MONOREPO=/c/Users/admin/.dsh/source/staging-20260808T121140Z   # 或作为第一个参数
 bash scripts/build-all.sh   # link-deps + 8 子包 + meta 包 tsc + 产物完整性验证（无 .ts 残留导入、8+1 个 lib/index.js）
-bash scripts/test-all.sh    # 8 子包 vitest 全量（486 用例）；任一失败整体非零退出
+bash scripts/test-all.sh    # 8 子包 vitest 全量（516 用例）；任一失败整体非零退出
 ```
 
 > `prepack` 已指向 `build:all`（完整构建 7 子包 + meta），保证发布 tarball 含全部运行入口。

@@ -13,7 +13,7 @@
 
 import type { Context } from 'cordis'
 import { defineTool } from '@deepseek-ai/dsh-tools'
-import { unifiedDiff, lineStats, type DiffOp } from './text-diff.ts'
+import { unifiedDiff, lineStats, effectiveOps, splitLines, type DiffOp } from './text-diff.ts'
 import { generatePatch, validatePatch } from './patch.ts'
 import { jsonDiffText, type JsonChange } from './json-diff.ts'
 import { csvDiff, type CsvReport } from './csv-diff.ts'
@@ -24,6 +24,8 @@ import {
   utf8ByteLength,
   normalizeMaxChanges,
   normalizeContext,
+  assertOutputSize,
+  assertWellFormedText,
 } from './limits.ts'
 
 export const name = '@deepseek-ai/dsh-tool-diff'
@@ -91,10 +93,20 @@ interface Summary {
 }
 
 function runAction(args: DiffArgs): string {
+  const result = dispatch(args)
+  // D-07 兜底：任何 action 的最终 JSON 信封必须 ≤64KiB（fitEnvelope/patch 二分已保证，此处为契约断言）
+  assertOutputSize(result)
+  return result
+}
+
+function dispatch(args: DiffArgs): string {
   const action = args.action
   if (typeof action !== 'string') throw new Error('diff: action must be a string')
   const before = str(args.before, 'before')
   const after = str(args.after, 'after')
+  // D-11 修复：孤立 surrogate 拒绝（合法 Unicode 前置检查）
+  assertWellFormedText(before, 'before')
+  assertWellFormedText(after, 'after')
   if (utf8ByteLength(before) > MAX_INPUT_BYTES) {
     throw new Error(`diff: before input exceeds ${MAX_INPUT_BYTES / 1024}KiB limit`)
   }
@@ -120,8 +132,10 @@ function runAction(args: DiffArgs): string {
   switch (action) {
     case 'text': {
       const { diff, ops, stats } = unifiedDiff(before, after, { context, ignoreWhitespace, ignoreCase })
-      const changeCount = ops.filter(o => o.type !== 'equal').length
-      const structured = structuredText(ops)
+      // stats/变化数/structured 与渲染同源（仅末尾换行差异时按合成序列计）
+      const effective = effectiveOps(ops, splitLines(before).trailingNewline, splitLines(after).trailingNewline)
+      const changeCount = effective.filter(o => o.type !== 'equal').length
+      const structured = structuredText(effective)
       const wantDiff = format === undefined || format === 'unified' || format === 'both'
       const wantStructured = format === 'structured' || format === 'both'
       if (!wantDiff && !wantStructured) throw new Error('diff: invalid format for text action')
@@ -140,8 +154,9 @@ function runAction(args: DiffArgs): string {
       return fitEnvelope(make, changeLimit).text
     }
     case 'json': {
-      const { changes } = jsonDiffText(before, after, { ignoreCase, sortKeys })
+      const { changes, duplicateKeys } = jsonDiffText(before, after, { ignoreCase, sortKeys })
       const wantDiff = format === 'unified' || format === 'both'
+      const hasDup = duplicateKeys.before.length > 0 || duplicateKeys.after.length > 0
       const make = (n: number) => {
         const limited = changes.slice(0, n).map(c => ({ op: c.kind, path: c.path, ...(c.kind !== 'add' ? { before: c.before } : {}), ...(c.kind !== 'remove' ? { after: c.after } : {}) }))
         const summary = { added: 0, removed: 0, replaced: 0, moved: 0 }
@@ -155,6 +170,8 @@ function runAction(args: DiffArgs): string {
           ...summaryBase(changes.length === 0, n < changes.length, changes.length),
           changes: limited,
           summary,
+          // D-10 修复：重复键不静默丢弃，两侧分别报告
+          ...(hasDup ? { duplicateKeys } : {}),
           ...(wantDiff ? { diff: truncateText(unifiedDiff(before, after, { context, ignoreWhitespace, ignoreCase }).diff, 48 * 1024).text } : {}),
         }
       }
@@ -199,23 +216,52 @@ function runAction(args: DiffArgs): string {
       return fitEnvelope(make, mdChangeCount(report)).text
     }
     case 'patch': {
-      const { patch, ops } = generatePatch('before', 'after', before, after, context, { ignoreWhitespace, ignoreCase })
-      const validation = validatePatch(before, patch, after)
-      const stats = lineStats(ops)
-      const p = truncateText(patch, 48 * 1024)
-      const payload = {
-        kind: 'patch',
-        ...summaryBase(validation.valid, p.truncated, validation.hunks),
-        valid: validation.valid,
-        patch: p.text,
-        hunks: validation.hunks,
-        appliedLines: validation.appliedLines,
-        appliedBytes: utf8ByteLength(after),
-        targetMatchesAfter: validation.targetMatchesAfter,
-        errors: validation.errors,
-        stats,
+      // D-03 契约：patch 是精确文本协议，ignore 只作用于比较类 action
+      if (ignoreWhitespace || ignoreCase) {
+        throw new Error('diff: patch action does not support ignoreCase/ignoreWhitespace (use text action for normalized comparison)')
       }
-      return JSON.stringify(payload)
+      const { patch, ops } = generatePatch('before', 'after', before, after, context)
+      const validation = validatePatch(before, patch, after)
+      // D-08 修复：stats/changes 与渲染同源（仅末尾换行差异按合成序列计）
+      const effective = effectiveOps(ops, splitLines(before).trailingNewline, splitLines(after).trailingNewline)
+      const stats = lineStats(effective)
+      // D-01 修复：equal = before/after 在 patch 语义（精确行 + 末尾换行）下相等，与 valid 无关
+      const changeCount = effective.filter(o => o.type !== 'equal').length
+      const equal = changeCount === 0
+      // D-07 修复：整个信封纳入 64KiB 预算；patch 截断 → valid:false + patchComplete:false
+      const patchBytes = utf8ByteLength(patch)
+      const fullPayload = (capBytes: number) => {
+        const t = truncateText(patch, capBytes)
+        const truncated = t.truncated
+        const errs = validation.errors
+        const omittedErrors = errs.length > 10 ? errs.length - 10 : 0
+        return {
+          kind: 'patch',
+          ...summaryBase(equal, truncated, changeCount),
+          valid: truncated ? false : validation.valid,
+          patch: t.text,
+          patchComplete: !truncated,
+          hunks: validation.hunks,
+          appliedLines: validation.appliedLines,
+          appliedBytes: utf8ByteLength(after),
+          targetMatchesAfter: truncated ? false : validation.targetMatchesAfter,
+          errors: truncated ? [...errs.slice(0, 10), 'patch truncated: result is not an applicable patch'] : errs.slice(0, 10),
+          ...(omittedErrors > 0 ? { omittedErrors } : {}),
+          stats,
+        }
+      }
+      // 二分找最大 patch 字节数使整个信封 ≤ MAX_OUTPUT_BYTES
+      let lo = 0
+      let hi = patchBytes
+      let best = JSON.stringify(fullPayload(hi))
+      if (utf8ByteLength(best) > MAX_OUTPUT_BYTES) {
+        while (lo <= hi) {
+          const mid = Math.floor((lo + hi) / 2)
+          const t = JSON.stringify(fullPayload(mid))
+          if (utf8ByteLength(t) <= MAX_OUTPUT_BYTES) { best = t; lo = mid + 1 } else { hi = mid - 1 }
+        }
+      }
+      return best
     }
     default:
       throw new Error(`diff: unknown action "${action}" (expected text|json|csv|markdown|patch)`)

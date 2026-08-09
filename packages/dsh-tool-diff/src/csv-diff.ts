@@ -201,20 +201,40 @@ export function csvDiff(beforeText: string, afterText: string, options: CsvDiffO
     report.addedColumns = header.slice()
   }
 
-  const byKey = new Map<string, CsvRow>()
-  const dupAfter: string[] = []
-  for (const r of after.rows) {
-    const k = r.cells[keyIndex] ?? ''
-    if (byKey.has(k)) { if (!dupAfter.includes(k)) dupAfter.push(k); continue }
-    byKey.set(k, r)
+  // D-05 修复：两侧统一索引；key 区分"缺失列"与"空字符串"（present/value 二元组）；
+  // 任一侧出现重复 key → duplicateKeys 且 equal=false，重复 key 的行不参与匹配（结果确定）。
+  const MISSING = '\u0001missing-key'
+  const indexRows = (rows: CsvRow[]): { map: Map<string, CsvRow>; dupKeys: string[]; display: Map<string, string> } => {
+    const map = new Map<string, CsvRow>()
+    const counts = new Map<string, number>()
+    const display = new Map<string, string>()
+    for (const r of rows) {
+      const present = keyIndex < r.cells.length
+      const value = present ? r.cells[keyIndex]! : MISSING
+      const k = `${present ? 'p' : 'm'}\u0000${value}`
+      display.set(k, present ? value : '<missing-key>')
+      counts.set(k, (counts.get(k) ?? 0) + 1)
+      if (!map.has(k)) map.set(k, r)
+    }
+    const dupKeys: string[] = []
+    for (const [k, c] of counts) {
+      if (c > 1) dupKeys.push(k)
+    }
+    return { map, dupKeys, display }
   }
-  report.duplicateKeys.push(...dupAfter)
+  const beforeIdx = indexRows(before.rows)
+  const afterIdx = indexRows(after.rows)
+  const dupSet = new Set<string>([...beforeIdx.dupKeys, ...afterIdx.dupKeys])
+  report.duplicateKeys = [...dupSet].map(k => beforeIdx.display.get(k) ?? afterIdx.display.get(k) ?? k)
 
-  const seen = new Set<string>()
+  const dupKeyOf = (r: CsvRow): string => {
+    const present = keyIndex < r.cells.length
+    return `${present ? 'p' : 'm'}\u0000${present ? r.cells[keyIndex]! : MISSING}`
+  }
   for (const rb of before.rows) {
-    const k = rb.cells[keyIndex] ?? ''
-    seen.add(k)
-    const ra = byKey.get(k)
+    const k = dupKeyOf(rb)
+    if (dupSet.has(k)) continue // 重复 key 的行结果不确定，跳过
+    const ra = afterIdx.map.get(k)
     if (!ra) {
       report.removedRows.push(toRowObject(rb.cells, header))
       continue
@@ -232,11 +252,12 @@ export function csvDiff(beforeText: string, afterText: string, options: CsvDiffO
         changes.push({ column: colName, before: bv, after: av })
       }
     }
-    report.changedRows.push({ key: k, changes })
+    report.changedRows.push({ key: beforeIdx.display.get(k) ?? k, changes })
   }
   for (const r of after.rows) {
-    const k = r.cells[keyIndex] ?? ''
-    if (!seen.has(k) && !dupAfter.includes(k)) {
+    const k = dupKeyOf(r)
+    if (dupSet.has(k)) continue
+    if (!beforeIdx.map.has(k)) {
       report.addedRows.push(toRowObject(r.cells, header))
     }
   }
