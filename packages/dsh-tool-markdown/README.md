@@ -71,14 +71,38 @@ markdown { action: "toc", markdown: "# 标题一\n## 小节" }
 | 输入超限 | `markdown: <label> exceeds N bytes`（不截断） |
 | md2html 内嵌 HTML | 原样转义为文本，绝无白名单外标签输出 |
 
-## 接入方式
+## 安装
 
-```bash
+### Profile Bundle（推荐）
+
+将本插件作为独立 bundle 安装到 profile（0806+）：
+
+```sh
+# 交互式（web）profile
 dsh plugin --profile web add "C:/path/to/dsh-tool-markdown"
+# 一次性任务（headless）profile —— dsh run 默认使用 headless
 dsh plugin --profile headless add "C:/path/to/dsh-tool-markdown"
+```
+
+包内 `dsh.bundle.patch` 会在安装后自动把插件加入 profile 的 layer stack（row id：`tool-markdown`）。插件缺失的 peer 依赖（`cordis`、`@deepseek-ai/dsh-tools`）由 profile 的 healed `profiles/node_modules` 回退安装提供。
+
+> ⚠️ web 与 headless 是**不同 profile**：web 安装不会自动覆盖 headless；`dsh run` 默认使用 headless profile。Windows 路径使用正斜杠（`C:/...`）。
+
+### 验证安装
+
+```sh
 dsh --profile web --dump-config | grep tool-markdown
 ```
 
+### 运行验证
+
+```sh
+dsh run "使用 markdown 工具把 <h1>标题</h1> 转成 Markdown"
+```
+
+### 手动安装与旧版本兼容
+
+仅适用于不支持 Profile Bundle 的旧快照或插件开发调试环境（本地 junction/symlink、手动编辑 profile 层）。
 ## 测试
 
 ```bash

@@ -74,14 +74,38 @@ regex { action: "explain", pattern: "\\d{4}-\\d{2}" }
 | explain 节点超 4,096 | `regex: explain: pattern too complex` |
 | `$` 引用 | 走 JS 原生字符串替换路径：`$$`→`$`、`$n`→组（未参与→空串）、`$<name>`→命名组、未知引用字面保留（`$0`/`$<foo>` 与 V8 一致） |
 
-## 接入方式
+## 安装
 
-```bash
+### Profile Bundle（推荐）
+
+将本插件作为独立 bundle 安装到 profile（0806+）：
+
+```sh
+# 交互式（web）profile
 dsh plugin --profile web add "C:/path/to/dsh-tool-regex"
+# 一次性任务（headless）profile —— dsh run 默认使用 headless
 dsh plugin --profile headless add "C:/path/to/dsh-tool-regex"
+```
+
+包内 `dsh.bundle.patch` 会在安装后自动把插件加入 profile 的 layer stack（row id：`tool-regex`）。插件缺失的 peer 依赖（`cordis`、`@deepseek-ai/dsh-tools`）由 profile 的 healed `profiles/node_modules` 回退安装提供。
+
+> ⚠️ web 与 headless 是**不同 profile**：web 安装不会自动覆盖 headless；`dsh run` 默认使用 headless profile。Windows 路径使用正斜杠（`C:/...`）。
+
+### 验证安装
+
+```sh
 dsh --profile web --dump-config | grep tool-regex
 ```
 
+### 运行验证
+
+```sh
+dsh run "使用 regex 工具测试 d+ 是否匹配 abc123"
+```
+
+### 手动安装与旧版本兼容
+
+仅适用于不支持 Profile Bundle 的旧快照或插件开发调试环境（本地 junction/symlink、手动编辑 profile 层）。
 ## 测试
 
 ```bash
