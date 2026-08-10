@@ -26,7 +26,6 @@ export const inject = ['tools']
 /** worker 内正则执行的硬预算（毫秒）；到期 terminate 并报错。 */
 const WORKER_BUDGET_MS = 1000
 
-interface WorkerRequest { id: number; args: RegexActionArgs }
 interface WorkerResponse { id: number; ok: boolean; value?: string; error?: string }
 
 /** 在可终止的 worker 内执行 test/find/replace；超预算硬中断。 */
@@ -59,8 +58,9 @@ function executeInWorker(args: RegexActionArgs): Promise<string> {
         else reject(new Error(msg.error ?? 'regex: worker failed'))
       })
     })
-    worker.once('error', (err) => {
-      settle(() => reject(new Error(`regex: worker error: ${err.message}`)))
+    worker.once('error', (err: unknown) => {
+      const message = err instanceof Error ? err.message : String(err)
+      settle(() => reject(new Error(`regex: worker error: ${message}`)))
     })
     worker.once('exit', (code) => {
       // 仅在未收到响应时可达（正常路径已由 message 处理 settle）；视为失败

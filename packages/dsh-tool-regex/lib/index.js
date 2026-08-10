@@ -53,7 +53,8 @@ function executeInWorker(args) {
             });
         });
         worker.once('error', (err) => {
-            settle(() => reject(new Error(`regex: worker error: ${err.message}`)));
+            const message = err instanceof Error ? err.message : String(err);
+            settle(() => reject(new Error(`regex: worker error: ${message}`)));
         });
         worker.once('exit', (code) => {
             // 仅在未收到响应时可达（正常路径已由 message 处理 settle）；视为失败

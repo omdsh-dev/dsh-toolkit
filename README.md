@@ -1,12 +1,12 @@
 # 🧰 dsh-toolkit
 
-DSH 零依赖工具包 collection —— time / encoding / json / calculator / csv / regex / markdown / diff 八个确定性工具，**统一入口一键安装**。
+DSH 零依赖工具包 collection —— time / encoding / json / calculator / csv / regex / markdown / diff / stat / schema 十个确定性工具，**统一入口一键安装**。
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ## 为什么
 
-dsh-external 组织仓库持续增长，单插件在 hub 中容易被淹没；collection 分类是辨识度最高的形态。本仓库把 8 个工具插件 **vendored 冻结**为发布态快照（各子仓库仍独立演进），统一工程、统一测试、统一维护。
+dsh-external 组织仓库持续增长，单插件在 hub 中容易被淹没；collection 分类是辨识度最高的形态。本仓库把 10 个工具插件 **vendored 冻结**为发布态快照（各子仓库仍独立演进），统一工程、统一测试、统一维护。
 
 **定位（官方 Profile Bundle 生态方向）**：本仓库是 **collection 与安装辅助仓库**——每个子包都是可独立安装/启用/禁用/卸载的 bundle（`dsh plugin --profile <p> add <子包>`）；collection 提供目录、清单与批量安装脚本。meta 包 `@deepseek-ai/dsh-toolkit` 保留为**可选**的原子挂载模型（见下文两种运行模型）。
 
@@ -22,18 +22,20 @@ dsh-external 组织仓库持续增长，单插件在 hub 中容易被淹没；co
 | `regex` | 测试 / 提取 / 替换 / 静态解释（worker 硬超时） | 63 |
 | `markdown` | HTML↔Markdown / GFM 表格 / 目录生成（白名单安全） | 71 |
 | `diff` | 文本/JSON/CSV/Markdown 结构化比较与 unified diff（只读） | 124 |
-| **合计** | | **516** |
+| `stat` | 描述统计 / 百分位数 / 频数分布 / 相关性（零依赖确定性） | 82 |
+| `schema` | JSON Schema 验证 / 路径 / 解释 / 安全 default（零网络零动态） | 125 |
+| **合计** | | **723** |
 
 ## 架构
 
 ```
 dsh-toolkit/
-├── src/index.ts          # meta 包：相对路径动态导入 8 个子包 apply()，聚合注册
+├── src/index.ts          # meta 包：相对路径动态导入 10 个子包 apply()，聚合注册
 ├── packages/dsh-tool-*   # vendored 子包（发布态快照，name 保持 @deepseek-ai/dsh-tool-*）
 ├── scripts/
 │   ├── link-deps.sh      # 构建期 junction（cordis → vendor/cordis，dsh-tools → packages/core/tools）
-│   ├── build-all.sh      # 一键构建 8 子包 + meta 包（tsc）
-│   ├── test-all.sh       # 一键跑 8 子包 vitest（合计用例数）
+│   ├── build-all.sh      # 一键构建 10 子包 + meta 包（tsc）
+│   ├── test-all.sh       # 一键跑 10 子包 vitest（合计用例数）
 │   ├── install.sh        # meta / 逐包两种挂载模式（含 dry-run）
 │   ├── install-web.sh    # 独立 bundle 批量安装 → web profile
 │   ├── install-headless.sh # 独立 bundle 批量安装 → headless profile
@@ -62,8 +64,8 @@ dsh plugin --profile headless add "C:/path/to/dsh-toolkit/packages/dsh-tool-diff
 批量安装（collection 辅助脚本，幂等——重复执行不会重复添加）：
 
 ```sh
-./scripts/install-web.sh       # 全部 8 工具 → web profile
-./scripts/install-headless.sh  # 全部 8 工具 → headless profile（dsh run 使用面）
+./scripts/install-web.sh       # 全部 10 工具 → web profile
+./scripts/install-headless.sh  # 全部 10 工具 → headless profile（dsh run 使用面）
 ./scripts/install-all.sh       # 两个 profile 都装
 ```
 
@@ -86,7 +88,7 @@ dsh plugin --profile web add "C:/path/to/dsh-toolkit"
 dsh --profile web --dump-config | grep tool-kit
 ```
 
-> ⚠️ 若 profile 已单独挂载过同名插件（tool-time/.../tool-diff），挂 meta 包会注册重名报错——
+> ⚠️ 若 profile 已单独挂载过同名插件（tool-time/.../tool-diff/tool-stat/tool-schema），挂 meta 包会注册重名报错——
 > 此时先移除旧插件，或用独立 bundle 模型。meta apply 具备原子性（任一子插件失败时
 > 逆序回滚已注册工具，不残留部分状态）。
 
@@ -100,11 +102,11 @@ dsh --profile web --dump-config | grep tool-kit
 
 ```bash
 export DSH_MONOREPO=/c/Users/admin/.dsh/source/staging-20260808T121140Z   # 或作为第一个参数
-bash scripts/build-all.sh   # link-deps + 8 子包 + meta 包 tsc + 产物完整性验证（无 .ts 残留导入、8+1 个 lib/index.js）
-bash scripts/test-all.sh    # 8 子包 vitest 全量（516 用例）；任一失败整体非零退出
+bash scripts/build-all.sh   # link-deps + 10 子包 + meta 包 tsc + 产物完整性验证（无 .ts 残留导入、10+1 个 lib/index.js）
+bash scripts/test-all.sh    # 10 子包 vitest 全量（723 用例）；任一失败整体非零退出
 ```
 
-> `prepack` 已指向 `build:all`（完整构建 8 子包 + meta），保证发布 tarball 含全部运行入口。
+> `prepack` 已指向 `build:all`（完整构建 10 子包 + meta），保证发布 tarball 含全部运行入口。
 
 
 ## 同步 vendored（子仓库有更新时）

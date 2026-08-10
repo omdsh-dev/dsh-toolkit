@@ -57,6 +57,20 @@
       "description": "Diff 工具：文本/JSON/CSV/Markdown 结构化比较与 unified diff（只读）",
       "source": "./packages/dsh-tool-diff",
       "version": "0.0.1"
+    },
+    {
+      "id": "dsh-tool-stat",
+      "type": "plugin",
+      "description": "统计工具：描述统计/百分位数/频数分布/相关性（零依赖确定性）",
+      "source": "./packages/dsh-tool-stat",
+      "version": "0.0.1"
+    },
+    {
+      "id": "dsh-tool-schema",
+      "type": "plugin",
+      "description": "JSON Schema 验证工具：validate/paths/explain/normalize（零网络零动态执行）",
+      "source": "./packages/dsh-tool-schema",
+      "version": "0.0.1"
     }
   ]
 }

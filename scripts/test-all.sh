@@ -18,12 +18,16 @@ VITEST="$MONOREPO/node_modules/vitest/vitest.mjs"
 TMP="$(mktemp)"
 trap 'rm -f "$TMP"' EXIT
 
+# 从 toolkit 根跑 vitest（--root）：子包 cwd 会被 monorepo 根配置拦截，
+# root 指向本目录后 include（packages/*/tests/**/*.spec.ts）与 filter 均正确。
+WD="$(pwd -W 2>/dev/null || pwd)"
+
 TOTAL=0
 FAILED=0
 for P in packages/dsh-tool-*; do
   echo "== test $P"
   set +e
-  (cd "$P" && node "$VITEST" run tests) >"$TMP" 2>&1
+  node "$VITEST" run "$P" --root "$WD" >"$TMP" 2>&1
   RC=$?
   set -e
   grep -E 'Test Files|Tests ' "$TMP" || true
