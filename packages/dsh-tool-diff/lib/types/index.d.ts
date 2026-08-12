@@ -10,7 +10,7 @@
  * 输入单侧 256KB 上限、输出 64KB 上限（超限按 maxChanges 与字节预算截断并注明）；
  * Myers diagonal 预算 2000、行数 50K 上限；timeoutMs 2000 兜底。
  */
-import type { Context } from 'cordis';
+import type { Context } from '@deepseek-ai/cordis';
 export declare const name = "@deepseek-ai/dsh-tool-diff";
 export declare const inject: string[];
 export declare function apply(ctx: Context): void;

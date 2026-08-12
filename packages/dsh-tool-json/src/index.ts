@@ -7,7 +7,7 @@
  *     name: '@deepseek-ai/dsh-tool-json'
  */
 
-import type { Context } from 'cordis'
+import type { Context } from '@deepseek-ai/cordis'
 import { defineTool } from '@deepseek-ai/dsh-tools'
 import type { JsonValue } from '@deepseek-ai/dsh-tools'
 import { query } from './query.ts'

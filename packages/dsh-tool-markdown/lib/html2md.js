@@ -9,7 +9,7 @@
  * - baseUrl 提供时把相对 href/src 解析为绝对（naive join，文档注明限制）；
  * - 表格单元格内容中的 '|' 转义为 '\|'。
  */
-import { parseHtml } from "./html.js";
+import { parseHtml } from './html.js';
 const SCHEME_RE = /^([a-zA-Z][a-zA-Z0-9+.-]*):/;
 /** URL 规范化（审查 MD-01/MD-02）：去除 C0 控制字符与首尾空白后再判断。 */
 function normalizeUrl(raw) {

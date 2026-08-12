@@ -16,7 +16,7 @@
  */
 import { Worker } from 'node:worker_threads';
 import { defineTool } from '@deepseek-ai/dsh-tools';
-import { executeAction } from "./engine.js";
+import { executeAction } from './engine.js';
 export const name = '@deepseek-ai/dsh-tool-regex';
 export const inject = ['tools'];
 /** worker 内正则执行的硬预算（毫秒）；到期 terminate 并报错。 */

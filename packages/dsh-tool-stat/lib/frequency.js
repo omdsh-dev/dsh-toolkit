@@ -11,7 +11,7 @@
  *
  * 本模块不依赖 Cordis / dsh-tools；输入视为已通过 `validateStatArgs`。
  */
-import { MAX_DISTINCT, normalizeZero } from "./validate.js";
+import { MAX_DISTINCT, normalizeZero } from './validate.js';
 /** frequency action。`values` 视为已校验（有限、非空）。 */
 export function frequencyValues(values) {
     const counts = new Map();

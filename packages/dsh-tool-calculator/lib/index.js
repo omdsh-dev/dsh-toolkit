@@ -7,7 +7,7 @@
  *     name: '@deepseek-ai/dsh-tool-calculator'
  */
 import { defineTool } from '@deepseek-ai/dsh-tools';
-import { evaluate } from "./evaluate.js";
+import { evaluate } from './evaluate.js';
 export const name = '@deepseek-ai/dsh-tool-calculator';
 export const inject = ['tools'];
 export function apply(ctx) {

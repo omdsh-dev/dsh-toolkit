@@ -8,7 +8,7 @@
  * (?=…) (?!…) (?<=…) (?<!…) → 量词 * + ? {n} {n,} {n,m}（含 lazy 后缀）→ 转义类
  * \d \w \s \b 等 → 交替 | → 其余字面量。
  */
-import { MAX_EXPLAIN_NODES, MAX_PATTERN_BYTES } from "./engine.js";
+import { MAX_EXPLAIN_NODES, MAX_PATTERN_BYTES } from './engine.js';
 const MAX_DISPLAY = 60;
 function truncate(s) {
     return s.length > MAX_DISPLAY ? `${s.slice(0, MAX_DISPLAY)}…` : s;

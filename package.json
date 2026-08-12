@@ -6,6 +6,11 @@
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/types/index.d.ts",
+  "license": "MIT",
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "packageManager": "npm@11.16.0",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "build:all": "bash scripts/build-all.sh",
@@ -14,9 +19,9 @@
     "prepack": "npm run build:all"
   },
   "peerDependencies": {
-    "@deepseek-ai/dsh-tools": "*",
-    "cordis": "*",
-    "@deepseek-ai/dsh-invariants": "*"
+    "@deepseek-ai/dsh-tools": "^0.0.1-rc.1",
+    "@deepseek-ai/cordis": "^4.0.1-rc.1",
+    "@deepseek-ai/dsh-invariants": "^0.0.1-rc.1"
   },
   "dsh": {
     "bundle": {
@@ -37,5 +42,10 @@
     "packages",
     "scripts",
     "cordis.patch.yml"
-  ]
+  ],
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  }
 }

@@ -11,12 +11,12 @@
  * Myers diagonal 预算 2000、行数 50K 上限；timeoutMs 2000 兜底。
  */
 import { defineTool } from '@deepseek-ai/dsh-tools';
-import { unifiedDiff, lineStats, effectiveOps, splitLines } from "./text-diff.js";
-import { generatePatch, validatePatch } from "./patch.js";
-import { jsonDiffText } from "./json-diff.js";
-import { csvDiff } from "./csv-diff.js";
-import { markdownDiff } from "./markdown-diff.js";
-import { MAX_INPUT_BYTES, MAX_OUTPUT_BYTES, utf8ByteLength, normalizeMaxChanges, normalizeContext, assertOutputSize, assertWellFormedText, } from "./limits.js";
+import { unifiedDiff, lineStats, effectiveOps, splitLines } from './text-diff.js';
+import { generatePatch, validatePatch } from './patch.js';
+import { jsonDiffText } from './json-diff.js';
+import { csvDiff } from './csv-diff.js';
+import { markdownDiff } from './markdown-diff.js';
+import { MAX_INPUT_BYTES, MAX_OUTPUT_BYTES, utf8ByteLength, normalizeMaxChanges, normalizeContext, assertOutputSize, assertWellFormedText, } from './limits.js';
 export const name = '@deepseek-ai/dsh-tool-diff';
 export const inject = ['tools'];
 function str(v, param) {

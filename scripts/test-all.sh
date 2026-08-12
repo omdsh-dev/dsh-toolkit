@@ -1,19 +1,20 @@
 #!/usr/bin/env bash
-# 一键测试：跑 8 个子包的 vitest 套件。
+# 一键测试：跑 10 个子包的 vitest 套件。
 # 审查 TK-04 修复：直接检查 vitest 退出码；任一子包失败则整体非零退出；
 # 输出写入临时文件再解析（避免管道掩盖退出码）。
 #
-# 前置条件：DSH_MONOREPO 环境变量或第一个参数。
+# 两种模式：npm 独立模式（默认，使用本仓库 node_modules 的 vitest）；
+# monorepo 模式：显式提供 DSH_MONOREPO 环境变量或第一个参数。
 set -euo pipefail
 
 MONOREPO="${DSH_MONOREPO:-${1:-}}"
-if [ -z "$MONOREPO" ]; then
-  echo "error: DSH_MONOREPO (env or \$1) is required" >&2
-  exit 2
+if [ -n "$MONOREPO" ]; then
+  MONOREPO="$(printf '%s' "$MONOREPO" | sed -e 's|^/\([a-zA-Z]\)/|\u\1:/|' -e 's|\\|/|g' | sed 's|/$||')"
+  VITEST="$MONOREPO/node_modules/vitest/vitest.mjs"
+else
+  VITEST="$(pwd)/node_modules/vitest/vitest.mjs"
 fi
-MONOREPO="$(printf '%s' "$MONOREPO" | sed -e 's|^/\([a-zA-Z]\)/|\u\1:/|' -e 's|\\|/|g' | sed 's|/$||')"
-VITEST="$MONOREPO/node_modules/vitest/vitest.mjs"
-[ -f "$VITEST" ] || { echo "error: vitest not found under $MONOREPO" >&2; exit 2; }
+[ -f "$VITEST" ] || { echo "error: vitest not found (run npm install or set DSH_MONOREPO)" >&2; exit 2; }
 
 TMP="$(mktemp)"
 trap 'rm -f "$TMP"' EXIT

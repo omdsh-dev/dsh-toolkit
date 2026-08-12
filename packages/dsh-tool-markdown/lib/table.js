@@ -5,9 +5,9 @@
  * - 管道文本输入：首行为表头（已有分隔行则保留结构）；
  * - 列数不一致补空单元格；单元格内 '|' 转义；空单元格保留。
  */
-import { parseHtml } from "./html.js";
-import { tableToGfm } from "./html2md.js";
-import { isSeparatorRow, splitPipe } from "./md2html.js";
+import { parseHtml } from './html.js';
+import { tableToGfm } from './html2md.js';
+import { isSeparatorRow, splitPipe } from './md2html.js';
 function findTable(node) {
     if (node.type === 'element' && node.tag === 'table')
         return node;

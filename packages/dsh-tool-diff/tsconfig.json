@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2024"],
+    "lib": [
+      "ES2024"
+    ],
     "module": "esnext",
     "moduleResolution": "bundler",
     "outDir": "lib",
@@ -13,6 +15,11 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["src"],
-  "exclude": ["tests", "lib"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "tests",
+    "lib"
+  ]
 }

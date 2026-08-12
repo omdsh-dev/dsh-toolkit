@@ -7,7 +7,7 @@
  *     name: '@deepseek-ai/dsh-tool-time'
  */
 import { defineTool } from '@deepseek-ai/dsh-tools';
-import { executeAction } from "./time.js";
+import { executeAction } from './time.js';
 export const name = '@deepseek-ai/dsh-tool-time';
 export const inject = ['tools'];
 export function apply(ctx) {

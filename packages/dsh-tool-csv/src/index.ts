@@ -10,7 +10,7 @@
  * 查询只做字面精确匹配，无表达式求值面；timeoutMs 2000 兜底。
  */
 
-import type { Context } from 'cordis'
+import type { Context } from '@deepseek-ai/cordis'
 import { defineTool } from '@deepseek-ai/dsh-tools'
 import { parseCsv, normalizeDelimiter } from './parse.ts'
 import { queryRows, statsGrid, toJsonRows, normalizeLimit } from './query.ts'

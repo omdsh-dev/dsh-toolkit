@@ -13,9 +13,9 @@
  * 的递归遍历是安全的（图无环）。返回节点路径表 nodePaths（WeakMap<object, string>，
  * 首次遇到节点时记录），供 validator 在 `$ref` 目标上报告错误时使用。
  */
-import { MAX_PATTERN_BYTES, MAX_PATTERNS, MAX_REF_CHAIN } from "./limits.js";
-import { escapeToken } from "./json-guard.js";
-import { parseRef, resolveRef } from "./ref.js";
+import { MAX_PATTERN_BYTES, MAX_PATTERNS, MAX_REF_CHAIN } from './limits.js';
+import { escapeToken } from './json-guard.js';
+import { parseRef, resolveRef } from './ref.js';
 /** v1 支持的约束关键字（设计文档 §3.1）。 */
 const CONSTRAINT_KEYWORDS = new Set([
     'type',

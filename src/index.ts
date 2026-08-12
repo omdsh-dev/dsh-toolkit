@@ -15,7 +15,7 @@
  *     name: '@deepseek-ai/dsh-toolkit'
  */
 
-import type { Context } from 'cordis'
+import type { Context } from '@deepseek-ai/cordis'
 import type { ToolDefinition } from '@deepseek-ai/dsh-tools'
 
 interface SubPlugin {

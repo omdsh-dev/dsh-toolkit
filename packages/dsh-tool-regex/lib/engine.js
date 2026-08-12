@@ -16,7 +16,7 @@
  * 独立 exec 循环计数替换次数；空匹配推进实现 ECMAScript AdvanceStringIndex
  * （u/v 标志下按 surrogate pair 推进，否则按 1 个 UTF-16 code unit）。
  */
-import { explainPattern } from "./explain.js";
+import { explainPattern } from './explain.js';
 export const MAX_INPUT_BYTES = 64_000;
 export const MAX_PATTERN_BYTES = 16_384;
 export const MAX_REPLACEMENT_BYTES = 16_384;

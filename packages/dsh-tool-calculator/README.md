@@ -49,7 +49,7 @@ Agent 做算术不稳定是 LLM 的通病。DSH 内置的 `bash` 工具可以调
 ## 工具声明
 
 ```ts
-import type { Context } from 'cordis'
+import type { Context } from '@deepseek-ai/cordis'
 import { defineTool } from '@deepseek-ai/dsh-tools'
 import { evaluate } from './evaluate.ts'
 
@@ -99,48 +99,32 @@ export function apply(ctx: Context): void {
 - **patch 格式**: `cordis.patch.yml` 使用 `- insert:` 列表（0806 的 patch 是 id-targeted 语义，裸 `- id:` 条目会报 `entry not found`）
 - **files**: 发布 tarball 含 `lib/`、`src/`、`cordis.patch.yml`
 
-## 安装
+## 接入方式
 
-### Profile Bundle（推荐）
+### 方式 A：DSH profile 插件安装（0806+，推荐）
 
-将本插件作为独立 bundle 安装到 profile（0806+）：
+等 `@deepseek-ai/dsh-tools` 发布到 npm 后，本插件可作为独立 bundle 一键安装到任意 profile：
 
-```sh
-# 交互式（web）profile
-dsh plugin --profile web add "C:/path/to/dsh-tool-calculator"
-# 一次性任务（headless）profile —— dsh run 默认使用 headless
-dsh plugin --profile headless add "C:/path/to/dsh-tool-calculator"
+```bash
+dsh plugin --profile headless add @dsh-external/dsh-tool-calculator
+dsh plugin --profile web add @dsh-external/dsh-tool-calculator
 ```
 
-包内 `dsh.bundle.patch`（指向 `cordis.patch.yml`）会在安装后自动把插件加入 profile 的 layer stack；插件的 `cordis.patch.yml` 以 `- insert:` 插入 `tool-calculator` 条目。插件缺失的 peer 依赖（`cordis`、`@deepseek-ai/dsh-tools`）由 profile 的 healed `profiles/node_modules` 回退安装提供。
+包内 `dsh.bundle` 声明（patch 指向 `cordis.patch.yml`）会在安装后自动把插件加入 profile 的 layer stack；插件的 `cordis.patch.yml` 以 `- insert:` 插入 `tool-calculator` 条目。插件缺失的 peer 依赖（`cordis`、`@deepseek-ai/dsh-tools`）由 profile 的 healed `profiles/node_modules` 回退安装提供。
 
-> ⚠️ web 与 headless 是**不同 profile**：web 安装不会自动覆盖 headless；`dsh run` 默认使用 headless profile。Windows 路径使用正斜杠（`C:/...`）。
+### 方式 B：monorepo 集成 + profile patch（当前可用）
 
-### 验证安装
+在 `@deepseek-ai/dsh-tools` 发布前，走 DSH monorepo：
 
-```sh
-dsh --profile web --dump-config | grep tool-calculator
-```
-
-### 运行验证
-
-```sh
-dsh run "使用 calculator 工具计算 1+2*3"
-```
-
-### 手动安装与旧版本兼容
-
-仅适用于不支持 Profile Bundle 的旧快照或插件开发调试环境：
-
-1. 放入 monorepo：`cp -r calculator ~/.dsh/source/master/packages/tools/calculator`（开发调试）
-2. `apps/cli/package.json` 加 `"@deepseek-ai/dsh-tool-calculator": "workspace:^"`；`tsconfig.host.json` references 加 `{ "path": "./packages/tools/calculator" }`
-3. `pnpm install && pnpm run build`
+1. 放入 monorepo：`cp -r calculator ~/.dsh/source/master/packages/tools/calculator`
+2. `apps/cli/package.json` 加 `"@deepseek-ai/calculator": "workspace:^"`；`tsconfig.host.json` references 加 `{ "path": "./packages/tools/calculator" }`
+3. `pnpm install && pnpm run build`（monorepo 根构建，产出 `lib/`）
 4. 在 profile 用户层 patch 插入插件（`~/.dsh/profiles/<name>/cordis.patch.yml`）：
 
 ```yaml
 - insert:
     - id: tool-calculator
-      name: '@deepseek-ai/dsh-tool-calculator'
+      name: '@deepseek-ai/calculator'
 ```
 
 5. 验证：`dsh --profile <name> --dump-config | grep tool-calculator`

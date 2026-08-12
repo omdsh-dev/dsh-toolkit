@@ -9,7 +9,7 @@
  * - 列集合变化单独报告 addedColumns / removedColumns；缺失列值统一为 null；
  * - 行顺序默认不影响 keyed 结果。
  */
-import { assertInputSize, MAX_CSV_ROWS, MAX_CSV_COLUMNS } from "./limits.js";
+import { assertInputSize, MAX_CSV_ROWS, MAX_CSV_COLUMNS } from './limits.js';
 /** 解析 CSV 文本（RFC4180 风格，支持自定义分隔符）。返回表头（若多行）与数据行。 */
 export function parseCsv(text, delimiter = ',') {
     assertInputSize(text, 'csv');

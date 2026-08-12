@@ -7,7 +7,7 @@
  *     name: '@deepseek-ai/dsh-tool-calculator'
  */
 
-import type { Context } from 'cordis'
+import type { Context } from '@deepseek-ai/cordis'
 import { defineTool } from '@deepseek-ai/dsh-tools'
 import { evaluate } from './evaluate.ts'
 

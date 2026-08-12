@@ -15,10 +15,10 @@
  * - 输出上限 1 MiB：超限时截断 errors/schemaIssues 等数组并置 truncated。
  */
 import { defineTool } from '@deepseek-ai/dsh-tools';
-import { DEFAULT_MAX_ERRORS, MAX_ERRORS, MAX_OUTPUT_BYTES, TOOL_TIMEOUT_MS } from "./limits.js";
-import { validateCore } from "./validator.js";
-import { normalizeAction } from "./normalize.js";
-import { explainSchema } from "./explain.js";
+import { DEFAULT_MAX_ERRORS, MAX_ERRORS, MAX_OUTPUT_BYTES, TOOL_TIMEOUT_MS } from './limits.js';
+import { validateCore } from './validator.js';
+import { normalizeAction } from './normalize.js';
+import { explainSchema } from './explain.js';
 export const name = '@deepseek-ai/dsh-tool-schema';
 export const inject = ['tools'];
 function clampMaxErrors(value) {

@@ -13,9 +13,9 @@
  *   时已经匹配，才允许进入该分支；否则保持不变并给 warning；
  * - 返回 appliedDefaults 路径列表，再对结果运行完整 validate。
  */
-import { escapeToken, isJsonCompatible, isJsonRecord } from "./json-guard.js";
-import { resolveRef } from "./ref.js";
-import { preflight, validateCore } from "./validator.js";
+import { escapeToken, isJsonCompatible, isJsonRecord } from './json-guard.js';
+import { resolveRef } from './ref.js';
+import { preflight, validateCore } from './validator.js';
 /** 深拷贝：新对象均为 null-prototype；WeakMap 防御输入环（守卫已拒绝，双保险）。 */
 export function deepCopyJson(value) {
     const memo = new WeakMap();

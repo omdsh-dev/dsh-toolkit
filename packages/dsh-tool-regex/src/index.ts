@@ -15,7 +15,7 @@
  * - explain 只做静态 tokenizer，不构造 RegExp，天然免疫 ReDoS，保持同步执行。
  */
 
-import type { Context } from 'cordis'
+import type { Context } from '@deepseek-ai/cordis'
 import { Worker } from 'node:worker_threads'
 import { defineTool } from '@deepseek-ai/dsh-tools'
 import { executeAction, type RegexActionArgs } from './engine.ts'

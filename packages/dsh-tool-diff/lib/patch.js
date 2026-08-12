@@ -5,8 +5,8 @@
  * - validatePatch：解析 `---`/`+++`/`@@`/上下文行，在内存中把补丁应用到 before，
  *   与 after 逐行比对；绝不写文件、不调用 git（read-only）。
  */
-import { splitLines, diffLines, renderUnified } from "./text-diff.js";
-import { assertInputSize } from "./limits.js";
+import { splitLines, diffLines, renderUnified } from './text-diff.js';
+import { assertInputSize } from './limits.js';
 /**
  * 生成 unified patch（D-03 契约：patch 是精确文本协议，不做 ignore 归一化——
  * 归一化比较请用 text action；ignore 选项会在工具入口被拒绝）。

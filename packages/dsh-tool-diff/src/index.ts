@@ -11,7 +11,7 @@
  * Myers diagonal 预算 2000、行数 50K 上限；timeoutMs 2000 兜底。
  */
 
-import type { Context } from 'cordis'
+import type { Context } from '@deepseek-ai/cordis'
 import { defineTool } from '@deepseek-ai/dsh-tools'
 import { unifiedDiff, lineStats, effectiveOps, splitLines, type DiffOp } from './text-diff.ts'
 import { generatePatch, validatePatch } from './patch.ts'

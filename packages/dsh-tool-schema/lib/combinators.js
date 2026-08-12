@@ -13,7 +13,7 @@
  * not 的父级错误以 deferred finalizer 形式注册：pattern 阶段之后按注册顺序
  * （先内后外）结算，保证嵌套组合的正确性。
  */
-import { compareErrors, evalBranch, pushError } from "./validator.js";
+import { compareErrors, evalBranch, pushError } from './validator.js';
 function summarize(buf) {
     return [...buf.errors].sort(compareErrors);
 }

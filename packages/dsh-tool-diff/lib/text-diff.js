@@ -7,7 +7,7 @@
  * - unified diff 渲染：`--- before` / `+++ after` / `@@ -s,c +s,c @@`，
  *   无时间戳（可复现）；末尾无换行输出 `\ No newline at end of file`。
  */
-import { MAX_LINES } from "./limits.js";
+import { MAX_LINES } from './limits.js';
 /** 行 hash（djb2）。 */
 function hashLine(text) {
     let h = 5381;

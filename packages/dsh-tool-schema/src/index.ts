@@ -15,7 +15,7 @@
  * - 输出上限 1 MiB：超限时截断 errors/schemaIssues 等数组并置 truncated。
  */
 
-import type { Context } from 'cordis'
+import type { Context } from '@deepseek-ai/cordis'
 import { defineTool } from '@deepseek-ai/dsh-tools'
 import type { JsonValue } from '@deepseek-ai/dsh-tools'
 import { DEFAULT_MAX_ERRORS, MAX_ERRORS, MAX_OUTPUT_BYTES, TOOL_TIMEOUT_MS } from './limits.ts'

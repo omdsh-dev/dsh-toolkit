@@ -14,7 +14,7 @@
  * - strictSchema 默认 true；maxErrors 默认 100、范围 1..1000；
  * - 输出上限 1 MiB：超限时截断 errors/schemaIssues 等数组并置 truncated。
  */
-import type { Context } from 'cordis';
+import type { Context } from '@deepseek-ai/cordis';
 export declare const name = "@deepseek-ai/dsh-tool-schema";
 export declare const inject: string[];
 /**

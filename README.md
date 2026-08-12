@@ -98,15 +98,24 @@ dsh --profile web --dump-config | grep tool-kit
 
 ## 构建与测试
 
-**前置条件**（审查 TK-02 修复）：脚本不再内置本机路径，必须显式提供 DSH monorepo 根：
+**npm 独立模式（默认，推荐）**：无需 DSH monorepo；`npm install`（devDependencies 自包含）后即可：
+
+```bash
+bash scripts/build-all.sh   # 10 子包 + meta 包 tsc + 产物完整性验证（无 .ts 残留导入、10+1 个 lib/index.js）
+bash scripts/test-all.sh    # 10 子包 vitest 全量（723 用例）；任一失败整体非零退出
+npm pack                    # prepack 自包含（build:all），tarball 含 lib + 10 个子包
+```
+
+**monorepo 模式（源码贡献/旧 snapshot）**：显式提供 DSH monorepo 根：
 
 ```bash
 export DSH_MONOREPO=/c/Users/admin/.dsh/source/staging-20260808T121140Z   # 或作为第一个参数
-bash scripts/build-all.sh   # link-deps + 10 子包 + meta 包 tsc + 产物完整性验证（无 .ts 残留导入、10+1 个 lib/index.js）
-bash scripts/test-all.sh    # 10 子包 vitest 全量（723 用例）；任一失败整体非零退出
+bash scripts/build-all.sh   # link-deps + 10 子包 + meta 包 tsc + 产物完整性验证
+bash scripts/test-all.sh
 ```
 
 > `prepack` 已指向 `build:all`（完整构建 10 子包 + meta），保证发布 tarball 含全部运行入口。
+> npm rc.1 兼容（已验证）：peer 全部为 `@deepseek-ai/cordis@^4.0.1-rc.1` 等 scoped 包；已在 `@deepseek-ai/dsh@0.0.1-rc.1` 隔离 consumer 中完成 profile compose（tool-kit row）与 10 工具真实注册/执行验证。
 
 
 ## 同步 vendored（子仓库有更新时）

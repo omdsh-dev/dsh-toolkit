@@ -16,7 +16,7 @@
  * - 不读取文件、不访问网络、不创建进程、不保存状态；不修改输入数组
  */
 
-import type { Context } from 'cordis'
+import type { Context } from '@deepseek-ai/cordis'
 import { defineTool } from '@deepseek-ai/dsh-tools'
 import type { JsonValue } from '@deepseek-ai/dsh-tools'
 import { validateStatArgs } from './validate.ts'

@@ -10,7 +10,7 @@
  * 本模块不依赖 Cordis / dsh-tools；输入视为已通过 `validateStatArgs`
  * （等长、至少 2 项、有限），且不修改输入数组。
  */
-import { normalizeZero } from "./validate.js";
+import { normalizeZero } from './validate.js';
 /**
  * 1-based 平均秩（ties 取 midrank）。返回与原数组同序的秩数组；
  * 不修改输入（对副本排序）。

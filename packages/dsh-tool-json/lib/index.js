@@ -7,7 +7,7 @@
  *     name: '@deepseek-ai/dsh-tool-json'
  */
 import { defineTool } from '@deepseek-ai/dsh-tools';
-import { query } from "./query.js";
+import { query } from './query.js';
 export const name = '@deepseek-ai/dsh-tool-json';
 export const inject = ['tools'];
 export function apply(ctx) {

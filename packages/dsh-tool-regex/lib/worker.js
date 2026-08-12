@@ -9,7 +9,7 @@
  * 两处均可用同一套源码逻辑）。
  */
 import { parentPort } from 'node:worker_threads';
-import { executeAction } from "./engine.js";
+import { executeAction } from './engine.js';
 parentPort.on('message', (req) => {
     let res;
     try {

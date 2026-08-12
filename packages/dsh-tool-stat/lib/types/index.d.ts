@@ -15,7 +15,7 @@
  * - 资源边界：最大 100000 观测、100 个百分位数、10000 distinct 输出；timeoutMs 2000
  * - 不读取文件、不访问网络、不创建进程、不保存状态；不修改输入数组
  */
-import type { Context } from 'cordis';
+import type { Context } from '@deepseek-ai/cordis';
 import type { StatResult } from './types.ts';
 export declare const name = "@deepseek-ai/dsh-tool-stat";
 export declare const inject: string[];

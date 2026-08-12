@@ -12,7 +12,7 @@
  * 本模块不依赖 Cordis / dsh-tools；输入视为已通过 `validateStatArgs`
  * （有限、长度 1..100000、-0 已归一化），且不修改输入数组。
  */
-import { normalizeZero } from "./validate.js";
+import { normalizeZero } from './validate.js';
 /** Neumaier compensated summation。 */
 export function compensatedSum(values) {
     let sum = 0;

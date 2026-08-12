@@ -16,10 +16,10 @@
  * - 不读取文件、不访问网络、不创建进程、不保存状态；不修改输入数组
  */
 import { defineTool } from '@deepseek-ai/dsh-tools';
-import { validateStatArgs } from "./validate.js";
-import { describeValues, percentileValues } from "./describe.js";
-import { frequencyValues } from "./frequency.js";
-import { correlationValues } from "./correlation.js";
+import { validateStatArgs } from './validate.js';
+import { describeValues, percentileValues } from './describe.js';
+import { frequencyValues } from './frequency.js';
+import { correlationValues } from './correlation.js';
 export const name = '@deepseek-ai/dsh-tool-stat';
 export const inject = ['tools'];
 /**

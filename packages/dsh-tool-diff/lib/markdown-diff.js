@@ -9,8 +9,8 @@
  *   - codeBlockChanges：[{ language, beforeLines, afterLines }]；
  *   - diff：两块文档的 unified diff（可选）。
  */
-import { splitLines, diffLines, renderUnified } from "./text-diff.js";
-import { assertInputSize } from "./limits.js";
+import { splitLines, diffLines, renderUnified } from './text-diff.js';
+import { assertInputSize } from './limits.js';
 const ATX_RE = /^(#{1,6})\s+(.+?)\s*#*\s*$/;
 const FENCE_RE = /^(`{3,}|~{3,})/;
 const LIST_RE = /^\s*[-*+]\s+/;

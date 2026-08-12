@@ -11,11 +11,11 @@
  * script/style/iframe 内容剥离；嵌套深度 64 上限；maxBytes 输入预算。
  */
 import { defineTool } from '@deepseek-ai/dsh-tools';
-import { utf8ByteLength } from "./bytes.js";
-import { html2md } from "./html2md.js";
-import { md2html } from "./md2html.js";
-import { normalizeTable } from "./table.js";
-import { toc } from "./toc.js";
+import { utf8ByteLength } from './bytes.js';
+import { html2md } from './html2md.js';
+import { md2html } from './md2html.js';
+import { normalizeTable } from './table.js';
+import { toc } from './toc.js';
 export const name = '@deepseek-ai/dsh-tool-markdown';
 export const inject = ['tools'];
 const DEFAULT_MAX_BYTES = 256_000;

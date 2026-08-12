@@ -7,7 +7,7 @@
  * - sortKeys 默认 true：变更列表按路径排序，输出可复现；
  * - 深度/体积预算：超过 MAX_JSON_DEPTH 或输入超限抛错（由 index.ts 转成工具错误）。
  */
-import { assertInputSize } from "./limits.js";
+import { assertInputSize } from './limits.js';
 const DEFAULT_MAX_DEPTH = 64;
 function normalizeString(s, ignoreCase) {
     if (ignoreCase)

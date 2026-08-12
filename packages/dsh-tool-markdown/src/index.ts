@@ -11,7 +11,7 @@
  * script/style/iframe 内容剥离；嵌套深度 64 上限；maxBytes 输入预算。
  */
 
-import type { Context } from 'cordis'
+import type { Context } from '@deepseek-ai/cordis'
 import { defineTool } from '@deepseek-ai/dsh-tools'
 import { utf8ByteLength } from './bytes.ts'
 import { html2md } from './html2md.ts'

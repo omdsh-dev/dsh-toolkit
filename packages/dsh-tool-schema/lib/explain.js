@@ -9,9 +9,9 @@
  * schema 预检查（checkSchema）与 explain 复用：不支持的 schema 关键字同样在
  * schemaIssues 中报告（绝不静默忽略）；节点摘要仅覆盖已支持关键字。
  */
-import { MAX_EXPLAIN_NODES, MAX_SCHEMA_BYTES, MAX_DEPTH, MAX_SCHEMA_NODES } from "./limits.js";
-import { checkJsonValue, escapeToken, isJsonRecord } from "./json-guard.js";
-import { checkSchema } from "./schema-check.js";
+import { MAX_EXPLAIN_NODES, MAX_SCHEMA_BYTES, MAX_DEPTH, MAX_SCHEMA_NODES } from './limits.js';
+import { checkJsonValue, escapeToken, isJsonRecord } from './json-guard.js';
+import { checkSchema } from './schema-check.js';
 function summarize(node) {
     const parts = [];
     if (Object.hasOwn(node, 'type')) {

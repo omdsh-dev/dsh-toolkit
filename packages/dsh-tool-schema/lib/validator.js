@@ -16,12 +16,12 @@
  * 组合关键字（allOf/anyOf/oneOf/not）见 combinators.ts；anyOf/oneOf/not 的
  * 判定依赖 pattern 结果，因此以 deferred finalizer 形式在 pattern 阶段之后结算。
  */
-import { MAX_BRANCH_ERRORS, MAX_DATA_BYTES, MAX_DEPTH, MAX_ERRORS, MAX_INSTANCE_NODES, MAX_PATTERNS, MAX_REF_CHAIN, MAX_SCHEMA_BYTES, MAX_SCHEMA_NODES, MULTIPLE_OF_TOLERANCE, PATTERN_BUDGET_MS, } from "./limits.js";
-import { checkJsonValue, escapeToken, isJsonRecord } from "./json-guard.js";
-import { checkSchema } from "./schema-check.js";
-import { resolveRef } from "./ref.js";
-import { runPatternChecksInWorker } from "./pattern-worker.js";
-import { checkAllOf, checkAnyOf, checkNot, checkOneOf } from "./combinators.js";
+import { MAX_BRANCH_ERRORS, MAX_DATA_BYTES, MAX_DEPTH, MAX_ERRORS, MAX_INSTANCE_NODES, MAX_PATTERNS, MAX_REF_CHAIN, MAX_SCHEMA_BYTES, MAX_SCHEMA_NODES, MULTIPLE_OF_TOLERANCE, PATTERN_BUDGET_MS, } from './limits.js';
+import { checkJsonValue, escapeToken, isJsonRecord } from './json-guard.js';
+import { checkSchema } from './schema-check.js';
+import { resolveRef } from './ref.js';
+import { runPatternChecksInWorker } from './pattern-worker.js';
+import { checkAllOf, checkAnyOf, checkNot, checkOneOf } from './combinators.js';
 /** 把错误推入缓冲；缓冲已满则置 truncated 并返回 false。 */
 export function pushError(buf, err) {
     if (buf.errors.length >= buf.cap) {

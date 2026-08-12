@@ -7,7 +7,7 @@
  *     name: '@deepseek-ai/dsh-tool-encoding'
  */
 import { defineTool } from '@deepseek-ai/dsh-tools';
-import { executeAction } from "./encoding.js";
+import { executeAction } from './encoding.js';
 export const name = '@deepseek-ai/dsh-tool-encoding';
 export const inject = ['tools'];
 export function apply(ctx) {

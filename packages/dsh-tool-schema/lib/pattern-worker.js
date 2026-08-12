@@ -18,7 +18,7 @@
  *   回溯（如 `(a+)+$`）不再能阻塞宿主进程。
  */
 import { parentPort, Worker } from 'node:worker_threads';
-import { MAX_PATTERN_BYTES, PATTERN_BUDGET_MS } from "./limits.js";
+import { MAX_PATTERN_BYTES, PATTERN_BUDGET_MS } from './limits.js';
 /**
  * 纯同步执行器：顺序执行全部 check，共享预算。worker 与测试共用；
  * worker 内再次执行 pattern 长度上限校验。

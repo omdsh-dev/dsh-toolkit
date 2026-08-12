@@ -10,8 +10,8 @@
  * 查询只做字面精确匹配，无表达式求值面；timeoutMs 2000 兜底。
  */
 import { defineTool } from '@deepseek-ai/dsh-tools';
-import { parseCsv, normalizeDelimiter } from "./parse.js";
-import { queryRows, statsGrid, toJsonRows, normalizeLimit } from "./query.js";
+import { parseCsv, normalizeDelimiter } from './parse.js';
+import { queryRows, statsGrid, toJsonRows, normalizeLimit } from './query.js';
 export const name = '@deepseek-ai/dsh-tool-csv';
 export const inject = ['tools'];
 function runAction(args) {
