@@ -103,11 +103,11 @@ export function apply(ctx: Context): void {
 
 ### 方式 A：DSH profile 插件安装（0806+，推荐）
 
-等 `@deepseek-ai/dsh-tools` 发布到 npm 后，本插件可作为独立 bundle 一键安装到任意 profile：
+等 `@deepseek-ai/dsh-tools` 发布到 npm 后，本插件可作为独立 bundle 一键安装到任意 profile。当前公开分发走 GitHub（仓库已迁移至个人账号）：
 
 ```bash
-dsh plugin --profile headless add @dsh-external/dsh-tool-calculator
-dsh plugin --profile web add @dsh-external/dsh-tool-calculator
+dsh plugin --profile headless add github:whiteicey/dsh-tool-calculator
+dsh plugin --profile web add github:whiteicey/dsh-tool-calculator
 ```
 
 包内 `dsh.bundle` 声明（patch 指向 `cordis.patch.yml`）会在安装后自动把插件加入 profile 的 layer stack；插件的 `cordis.patch.yml` 以 `- insert:` 插入 `tool-calculator` 条目。插件缺失的 peer 依赖（`cordis`、`@deepseek-ai/dsh-tools`）由 profile 的 healed `profiles/node_modules` 回退安装提供。
