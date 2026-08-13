@@ -6,7 +6,7 @@ DSH 零依赖工具包 collection —— time / encoding / json / calculator / c
 
 ## 为什么
 
-DSH 生态仓库持续增长，单插件在 hub 中容易被淹没；collection 分类是辨识度最高的形态。本仓库把 10 个工具插件 **vendored 冻结**为发布态快照（各子仓库独立演进，均位于 [whiteicey](https://github.com/whiteicey) 个人账号下公开），统一工程、统一测试、统一维护。
+DSH 生态仓库持续增长，单插件在 hub 中容易被淹没；collection 分类是辨识度最高的形态。本仓库把 10 个工具插件 **vendored 冻结**为发布态快照（各子仓库独立演进，均位于 [omdsh-dev](https://github.com/omdsh-dev) 组织下公开），统一工程、统一测试、统一维护。
 
 **定位（官方 Profile Bundle 生态方向）**：本仓库是 **collection 与安装辅助仓库**——每个子包都是可独立安装/启用/禁用/卸载的 bundle（`dsh plugin --profile <p> add <子包>`）；collection 提供目录、清单与批量安装脚本。meta 包 `@deepseek-ai/dsh-toolkit` 保留为**可选**的原子挂载模型（见下文两种运行模型）。
 
