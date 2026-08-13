@@ -1,5 +1,7 @@
 # 🧰 dsh-toolkit
 
+[English](README.en.md)
+
 DSH 零依赖工具包 collection —— time / encoding / json / calculator / csv / regex / markdown / diff / stat / schema 十个确定性工具，**统一入口一键安装**。
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
