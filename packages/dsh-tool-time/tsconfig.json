@@ -1,14 +1,28 @@
 {
-  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "ES2024"
+    ],
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "outDir": "lib",
     "rootDir": "src",
+    "declaration": true,
+    "declarationDir": "lib/types",
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
     "types": [
       "node"
     ],
-    "declarationDir": "lib/types"
+    "strict": true,
+    "skipLibCheck": true
   },
   "include": [
     "src"
+  ],
+  "exclude": [
+    "tests",
+    "lib"
   ]
 }

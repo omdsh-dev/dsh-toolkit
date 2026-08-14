@@ -6,15 +6,22 @@
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/types/index.d.ts",
+  "license": "MIT",
+  "engines": {
+    "node": "^22.19.0 || >=24.0.0"
+  },
+  "packageManager": "npm@11.16.0",
   "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "build": "tsc -p tsconfig.json",
-    "prepack": "npm run build",
-    "test": "vitest run tests"
+    "test": "vitest run tests",
+    "check": "npm run typecheck && npm test && npm run build",
+    "prepack": "npm run build"
   },
   "peerDependencies": {
-    "@deepseek-ai/dsh-invariants": "^0.0.1-rc.1",
-    "@deepseek-ai/dsh-tools": "^0.0.1-rc.1",
-    "@deepseek-ai/cordis": "^4.0.1-rc.1"
+    "@deepseek-ai/dsh-invariants": ">=0.0.1-rc.1 <0.2.0",
+    "@deepseek-ai/dsh-tools": ">=0.0.1-rc.1 <0.2.0",
+    "@deepseek-ai/cordis": "^4.0.1"
   },
   "dsh": {
     "bundle": {
@@ -33,5 +40,10 @@
     "lib",
     "src",
     "cordis.patch.yml"
-  ]
+  ],
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  }
 }

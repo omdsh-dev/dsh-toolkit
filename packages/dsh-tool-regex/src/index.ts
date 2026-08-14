@@ -26,6 +26,7 @@ export const inject = ['tools']
 /** worker 内正则执行的硬预算（毫秒）；到期 terminate 并报错。 */
 const WORKER_BUDGET_MS = 1000
 
+interface WorkerRequest { id: number; args: RegexActionArgs }
 interface WorkerResponse { id: number; ok: boolean; value?: string; error?: string }
 
 /** 在可终止的 worker 内执行 test/find/replace；超预算硬中断。 */
