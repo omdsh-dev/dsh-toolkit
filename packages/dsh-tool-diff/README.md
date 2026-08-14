@@ -1,5 +1,7 @@
 # dsh-tool-diff
 
+[English](README.en.md)
+
 DSH Diff 文本差异工具插件 —— 文本 / JSON / CSV / Markdown 结构化比较与 unified diff 生成。零依赖、纯函数、只读。
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -82,20 +84,40 @@ node <monorepo>/node_modules/typescript/bin/tsc -p tsconfig.json
 node <monorepo>/node_modules/vitest/vitest.mjs run tests
 ```
 
+## npm 0.1.0-rc.6 兼容（已验证）
+
+本插件已迁移到 npm 0.1.0-rc.6 依赖线，并在 `@deepseek-ai/dsh@0.1.0-rc.6` 的隔离 consumer 中完成全链路验证：
+
+- **类型/运行时**：`@deepseek-ai/cordis: ^4.0.1` + `@deepseek-ai/dsh-tools: >=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants: >=0.0.1-rc.1 <0.2.0`（peer）；不再依赖 unscoped `cordis`
+- **独立构建**：`npm install`（devDependencies 自包含 typescript/vitest/@types/node）→ `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
+- **消费验证**：tarball 装入 0.1.0-rc.6 consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
+- **启动方式**：`npx -p @deepseek-ai/dsh@0.1.0-rc.6 dsh web`（lib 生产模式；勿 `install -g` 全局安装）
+
+
 ## 安装
 
 ### Profile Bundle（推荐）
 
-将本插件作为独立 bundle 安装到 profile（0806+）：
+DSH 0.1.0-rc.6（npm）起，本插件可作为独立 bundle 一键安装到任意 profile（仓库位于 https://github.com/omdsh-dev，public）：
 
 ```sh
 # 交互式（web）profile
-dsh plugin --profile web add "C:/path/to/dsh-tool-diff"
+dsh plugin --profile web add github:omdsh-dev/dsh-tool-diff
 # 一次性任务（headless）profile —— dsh run 默认使用 headless
-dsh plugin --profile headless add "C:/path/to/dsh-tool-diff"
+dsh plugin --profile headless add github:omdsh-dev/dsh-tool-diff
 ```
 
-包内 `dsh.bundle.patch` 会在安装后自动把插件加入 profile 的 layer stack（row id：`tool-diff`）。插件缺失的 peer 依赖（`cordis`、`@deepseek-ai/dsh-tools`）由 profile 的 healed `profiles/node_modules` 回退安装提供。
+也可以先用 `npm pack` 打出 tarball 再安装：
+
+```sh
+git clone https://github.com/omdsh-dev/dsh-tool-diff
+cd dsh-tool-diff
+npm install && npm pack
+dsh plugin --profile web add ./deepseek-ai-dsh-tool-diff-*.tgz
+dsh plugin --profile headless add ./deepseek-ai-dsh-tool-diff-*.tgz
+```
+
+包内 `dsh.bundle.patch` 会在安装后自动把插件加入 profile 的 layer stack（row id：`tool-diff`）。插件缺失的 peer 依赖（`@deepseek-ai/cordis`、`@deepseek-ai/dsh-tools`、`@deepseek-ai/dsh-invariants`）由 profile 的 healed `profiles/node_modules` 回退安装提供。
 
 > ⚠️ web 与 headless 是**不同 profile**：web 安装不会自动覆盖 headless；`dsh run` 默认使用 headless profile。Windows 路径使用正斜杠（`C:/...`）。
 
@@ -111,9 +133,9 @@ dsh --profile web --dump-config | grep tool-diff
 dsh run "使用 diff 工具对比两段文本"
 ```
 
-### 手动安装与旧版本兼容
+### 手动安装（源码贡献 / 旧 snapshot 场景）
 
-仅适用于不支持 Profile Bundle 的旧快照或插件开发调试环境（本地 junction/symlink、手动编辑 profile 层）。
+仅适用于源码贡献（在 monorepo 中开发调试本插件）或仍在使用旧 snapshot 的场景（本地 junction/symlink、手动编辑 profile 层）。
 
 ## 许可
 

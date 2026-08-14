@@ -1,5 +1,7 @@
 # dsh-tool-encoding
 
+[English](README.en.md)
+
 DSH 编码/哈希工具插件 —— UTF-8 文本的 base64/base64url/url/hex 编解码 + 哈希 + UUID。零依赖、零进程、纯函数。
 
 > 包名：`@deepseek-ai/dsh-tool-encoding`（独立 bundle，非 monorepo 集成形态）；`lib/` 产物由仓库内 `npm run build`（tsc）生成并随仓库提交。
@@ -77,29 +79,49 @@ ctx.tools.register(defineTool({
 - **所有 action 返回字符串**（含 `uuid`）
 - **不要对机密材料使用本工具**：tool 参数会记录进会话日志
 
+## npm 0.1.0-rc.6 兼容（已验证）
+
+本插件已迁移到 npm 0.1.0-rc.6 依赖线，并在 `@deepseek-ai/dsh@0.1.0-rc.6` 的隔离 consumer 中完成全链路验证：
+
+- **类型/运行时**：`@deepseek-ai/cordis@^4.0.1` + `@deepseek-ai/dsh-tools@>=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants@>=0.0.1-rc.1 <0.2.0`（peer）；不再依赖 unscoped `cordis`
+- **独立构建**：`npm install`（devDependencies 自包含 typescript/vitest/@types/node）→ `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
+- **消费验证**：tarball 装入 0.1.0-rc.6 consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
+- **启动方式**：`npx -p @deepseek-ai/dsh@0.1.0-rc.6 dsh web`（lib 生产模式；勿 `install -g` 全局安装）
+
+
 ## 版本适配
 
-- **适配 DSH snapshot**: `20260806T160212Z-279244acb0`（0806 迁移：profile/bundle 插件系统）
+- **适配 DSH 版本**: DSH 0.1.0-rc.6（npm）
 - **bundle 声明**: `package.json` 的 `dsh.bundle`（patch 指向 `cordis.patch.yml`）+ `exports` 导出
-- **patch 格式**: `cordis.patch.yml` 使用 `- insert:` 列表（0806 的 patch 是 id-targeted 语义，裸 `- id:` 条目会报 `entry not found`）
+- **patch 格式**: `cordis.patch.yml` 使用 `- insert:` 列表（patch 是 id-targeted 语义，裸 `- id:` 条目会报 `entry not found`）
 - **files**: 发布 tarball 含 `lib/`、`src/`、`cordis.patch.yml`
 
 ## 安装
 
+插件源码仓库：`https://github.com/omdsh-dev/dsh-tool-encoding`（public）。
+
 ### Profile Bundle（推荐）
 
-将本插件作为独立 bundle 安装到 profile（0806+）：
+将本插件作为独立 bundle 安装到 profile（DSH 0.1.0-rc.6，npm）：
 
 ```sh
 # 交互式（web）profile
-dsh plugin --profile web add "C:/path/to/dsh-tool-encoding"
+dsh plugin --profile web add github:omdsh-dev/dsh-tool-encoding
 # 一次性任务（headless）profile —— dsh run 默认使用 headless
-dsh plugin --profile headless add "C:/path/to/dsh-tool-encoding"
+dsh plugin --profile headless add github:omdsh-dev/dsh-tool-encoding
 ```
 
-包内 `dsh.bundle.patch`（指向 `cordis.patch.yml`）会在安装后自动把插件加入 profile 的 layer stack；插件的 `cordis.patch.yml` 以 `- insert:` 插入 `tool-encoding` 条目。插件缺失的 peer 依赖（`cordis`、`@deepseek-ai/dsh-tools`）由 profile 的 healed `profiles/node_modules` 回退安装提供。
+包内 `dsh.bundle.patch`（指向 `cordis.patch.yml`）会在安装后自动把插件加入 profile 的 layer stack；插件的 `cordis.patch.yml` 以 `- insert:` 插入 `tool-encoding` 条目。
 
-> ⚠️ web 与 headless 是**不同 profile**：web 安装不会自动覆盖 headless；`dsh run` 默认使用 headless profile。Windows 路径使用正斜杠（`C:/...`）。
+> ⚠️ web 与 headless 是**不同 profile**：web 安装不会自动覆盖 headless；`dsh run` 默认使用 headless profile。
+
+### npm pack tarball 安装
+
+```sh
+npm pack    # 生成 dsh-tool-encoding-*.tgz
+dsh plugin --profile web add ./dsh-tool-encoding-*.tgz
+dsh plugin --profile headless add ./dsh-tool-encoding-*.tgz
+```
 
 ### 验证安装
 
@@ -130,13 +152,12 @@ dsh run "使用 encoding 工具把 hello 做 base64 编码"
 
 5. 验证：`dsh --profile <name> --dump-config | grep tool-encoding`
 
-> 0806 注意：patch 是 id-targeted 语义——裸 `- id:` 条目会报 `entry "xxx" not found`，必须用 `- insert:` 列表包裹。
+> 注意：patch 是 id-targeted 语义——裸 `- id:` 条目会报 `entry "xxx" not found`，必须用 `- insert:` 列表包裹。
 ## 已知限制
 
-1. 分发链路：`@deepseek-ai/dsh-tools` 私有，需 monorepo workspace
-2. 任意二进制（不可打印字节）编解码需 v2 的 `output: "utf8" | "hex"` 模式
-3. hash 仅摘要，无 HMAC/加盐/密钥派生；MD5/SHA-1 仅兼容性/非安全完整性校验
-4. URL 是 component 语义；表单编码（空格 → `+`）需独立 action（v2）
+1. 任意二进制（不可打印字节）编解码需 v2 的 `output: "utf8" | "hex"` 模式
+2. hash 仅摘要，无 HMAC/加盐/密钥派生；MD5/SHA-1 仅兼容性/非安全完整性校验
+3. URL 是 component 语义；表单编码（空格 → `+`）需独立 action（v2）
 
 ## 测试
 

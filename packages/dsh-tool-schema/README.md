@@ -1,5 +1,7 @@
 # dsh-tool-schema
 
+[English](README.en.md)
+
 DSH JSON Schema 验证工具插件 —— 验证数据、列出失败路径、解释 schema 约束、安全应用 default。零网络、零动态代码执行。
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -87,22 +89,42 @@ node <monorepo>/node_modules/typescript/bin/tsc -p tsconfig.json
 node <monorepo>/node_modules/vitest/vitest.mjs run tests
 ```
 
+## npm 0.1.0-rc.6 兼容（已验证）
+
+本插件已迁移到 npm 0.1.0-rc.6 依赖线，并在 `@deepseek-ai/dsh@0.1.0-rc.6` 的隔离 consumer 中完成全链路验证：
+
+- **类型/运行时**：`@deepseek-ai/cordis@^4.0.1` + `@deepseek-ai/dsh-tools@>=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants@>=0.0.1-rc.1 <0.2.0`（peer）；不再依赖 unscoped `cordis`
+- **独立构建**：`npm install`（devDependencies 自包含 typescript/vitest/@types/node）→ `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
+- **消费验证**：tarball 装入 0.1.0-rc.6 consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
+- **启动方式**：`npx -p @deepseek-ai/dsh@0.1.0-rc.6 dsh web`（lib 生产模式；勿 `install -g` 全局安装）
+
+
 ## 安装
 
 ### Profile Bundle（推荐）
 
-将本插件作为独立 bundle 安装到 profile（0806+）：
+仓库位于 [omdsh-dev/dsh-tool-schema](https://github.com/omdsh-dev/dsh-tool-schema)（public）。将本插件作为独立 bundle 安装到 profile（DSH 0.1.0-rc.6（npm））：
 
 ```sh
 # 交互式（web）profile
-dsh plugin --profile web add "C:/path/to/dsh-tool-schema"
+dsh plugin --profile web add github:omdsh-dev/dsh-tool-schema
 # 一次性任务（headless）profile —— dsh run 默认使用 headless
-dsh plugin --profile headless add "C:/path/to/dsh-tool-schema"
+dsh plugin --profile headless add github:omdsh-dev/dsh-tool-schema
 ```
 
 包内 `dsh.bundle.patch` 会在安装后自动把插件加入 profile 的 layer stack（row id：`tool-schema`）。插件缺失的 peer 依赖（`cordis`、`@deepseek-ai/dsh-tools`）由 profile 的 healed `profiles/node_modules` 回退安装提供。
 
 > ⚠️ web 与 headless 是**不同 profile**：web 安装不会自动覆盖 headless；`dsh run` 默认使用 headless profile。Windows 路径使用正斜杠（`C:/...`）。
+
+### npm pack tarball 安装
+
+本地构建后用 tarball 路径安装（不依赖 GitHub）：
+
+```sh
+# tarball 方式（web 为例；headless 同）
+npm pack
+dsh plugin --profile web add <npm pack 产物 tarball 路径>
+```
 
 ### 验证安装
 
@@ -118,7 +140,7 @@ dsh run "用 schema 工具验证 {name: 'x', age: 3} 是否符合给定 JSON Sch
 
 ### 手动安装与旧版本兼容
 
-仅适用于不支持 Profile Bundle 的旧快照或插件开发调试环境（本地 junction/symlink、手动编辑 profile 层）。
+旧场景（monorepo 集成、不支持 Profile Bundle 的旧快照或插件开发调试环境——本地 junction/symlink、手动编辑 profile 层）。
 
 ## 许可
 

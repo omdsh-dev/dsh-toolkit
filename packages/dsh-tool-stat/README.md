@@ -1,5 +1,7 @@
 # dsh-tool-stat
 
+[English](README.en.md)
+
 DSH 统计工具插件 —— 描述统计、百分位数、频数分布、相关性计算。零依赖、纯函数、确定性。
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -78,20 +80,40 @@ node <monorepo>/node_modules/typescript/bin/tsc -p tsconfig.json
 node <monorepo>/node_modules/vitest/vitest.mjs run tests
 ```
 
+## npm 0.1.0-rc.6 兼容（已验证）
+
+本插件已迁移到 npm 0.1.0-rc.6 依赖线，并在 `@deepseek-ai/dsh@0.1.0-rc.6`（npm 私有包）的隔离 consumer 中完成全链路验证：
+
+- **类型/运行时**：peer 为 `@deepseek-ai/cordis: ^4.0.1` + `@deepseek-ai/dsh-tools: >=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants: >=0.0.1-rc.1 <0.2.0`；不再依赖 unscoped `cordis`
+- **独立构建**：`npm install`（devDependencies 自包含 typescript/vitest/@types/node）→ `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
+- **消费验证**：tarball 装入 DSH 0.1.0-rc.6（npm）consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
+- **启动方式**：`npx -p @deepseek-ai/dsh@0.1.0-rc.6 dsh web`（lib 生产模式；勿 `install -g` 全局安装）
+
+
 ## 安装
 
 ### Profile Bundle（推荐）
 
-将本插件作为独立 bundle 安装到 profile（0806+）：
+将本插件作为独立 bundle 安装到 profile（DSH 0.1.0-rc.6（npm））。本仓库位于 [omdsh-dev](https://github.com/omdsh-dev) 组织，公开可访问：
 
 ```sh
-# 交互式（web）profile
-dsh plugin --profile web add "C:/path/to/dsh-tool-stat"
+# 交互式（web）profile —— 从 GitHub 仓库安装
+dsh plugin --profile web add github:omdsh-dev/dsh-tool-stat
 # 一次性任务（headless）profile —— dsh run 默认使用 headless
-dsh plugin --profile headless add "C:/path/to/dsh-tool-stat"
+dsh plugin --profile headless add github:omdsh-dev/dsh-tool-stat
 ```
 
-包内 `dsh.bundle.patch` 会在安装后自动把插件加入 profile 的 layer stack（row id：`tool-stat`）。插件缺失的 peer 依赖（`cordis`、`@deepseek-ai/dsh-tools`）由 profile 的 healed `profiles/node_modules` 回退安装提供。
+或使用 `npm pack` 生成的 tarball 安装：
+
+```sh
+npm pack     # 生成 dsh-tool-stat-<version>.tgz
+# 交互式（web）profile
+dsh plugin --profile web add ./dsh-tool-stat-<version>.tgz
+# 一次性任务（headless）profile
+dsh plugin --profile headless add ./dsh-tool-stat-<version>.tgz
+```
+
+包内 `dsh.bundle.patch` 会在安装后自动把插件加入 profile 的 layer stack（row id：`tool-stat`）。插件缺失的 peer 依赖（`@deepseek-ai/cordis`、`@deepseek-ai/dsh-tools`、`@deepseek-ai/dsh-invariants`）由 profile 的 healed `profiles/node_modules` 回退安装提供。
 
 > ⚠️ web 与 headless 是**不同 profile**：web 安装不会自动覆盖 headless；`dsh run` 默认使用 headless profile。Windows 路径使用正斜杠（`C:/...`）。
 
@@ -107,9 +129,9 @@ dsh --profile web --dump-config | grep tool-stat
 dsh run "使用 stat 工具计算 [1,2,3,4,5] 的描述统计"
 ```
 
-### 手动安装与旧版本兼容
+### 手动安装与旧版本兼容（monorepo 旧场景）
 
-仅适用于不支持 Profile Bundle 的旧快照或插件开发调试环境（本地 junction/symlink、手动编辑 profile 层）。
+monorepo 方式仅适用于旧场景：不支持 Profile Bundle 的旧快照或插件开发调试环境（本地 junction/symlink、手动编辑 profile 层）。
 
 ## 许可
 

@@ -1,5 +1,7 @@
 # dsh-tool-json
 
+[English](README.en.md)
+
 DSH JSON 查询工具插件 —— JMESPath-inspired 路径查询（自定义子集），零依赖递归下降解析器。
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -77,29 +79,49 @@ ctx.tools.register(defineTool({
 
 **不支持**（低频场景，bash + node 兜底）：过滤器 `[?downloads > 1000]`、管道 `|`、函数调用。
 
+## npm 0.1.0-rc.6 兼容（已验证）
+
+本插件已迁移到 npm 0.1.0-rc.6 依赖线，并在 `@deepseek-ai/dsh@0.1.0-rc.6` 的隔离 consumer 中完成全链路验证：
+
+- **类型/运行时**：`@deepseek-ai/cordis@^4.0.1` + `@deepseek-ai/dsh-tools@>=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants@>=0.0.1-rc.1 <0.2.0`（peer）；不再依赖 unscoped `cordis`
+- **独立构建**：`npm install`（devDependencies 自包含 typescript/vitest/@types/node）→ `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
+- **消费验证**：tarball 装入 0.1.0-rc.6 consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
+- **启动方式**：`npx -p @deepseek-ai/dsh@0.1.0-rc.6 dsh web`（lib 生产模式；勿 `install -g` 全局安装）
+
+
 ## 版本适配
 
-- **适配 DSH snapshot**: `20260806T160212Z-279244acb0`（0806 迁移：profile/bundle 插件系统）
+- **适配 DSH 版本**: DSH 0.1.0-rc.6（npm）
 - **bundle 声明**: `package.json` 的 `dsh.bundle`（patch 指向 `cordis.patch.yml`）+ `exports` 导出
-- **patch 格式**: `cordis.patch.yml` 使用 `- insert:` 列表（0806 的 patch 是 id-targeted 语义，裸 `- id:` 条目会报 `entry not found`）
+- **patch 格式**: `cordis.patch.yml` 使用 `- insert:` 列表（patch 是 id-targeted 语义，裸 `- id:` 条目会报 `entry not found`）
 - **files**: 发布 tarball 含 `lib/`、`src/`、`cordis.patch.yml`
 
 ## 安装
 
+插件源码仓库：`https://github.com/omdsh-dev/dsh-tool-json`（public）。
+
 ### Profile Bundle（推荐）
 
-将本插件作为独立 bundle 安装到 profile（0806+）：
+将本插件作为独立 bundle 安装到 profile（DSH 0.1.0-rc.6，npm）：
 
 ```sh
 # 交互式（web）profile
-dsh plugin --profile web add "C:/path/to/dsh-tool-json"
+dsh plugin --profile web add github:omdsh-dev/dsh-tool-json
 # 一次性任务（headless）profile —— dsh run 默认使用 headless
-dsh plugin --profile headless add "C:/path/to/dsh-tool-json"
+dsh plugin --profile headless add github:omdsh-dev/dsh-tool-json
 ```
 
-包内 `dsh.bundle.patch`（指向 `cordis.patch.yml`）会在安装后自动把插件加入 profile 的 layer stack；插件的 `cordis.patch.yml` 以 `- insert:` 插入 `tool-json` 条目。插件缺失的 peer 依赖（`cordis`、`@deepseek-ai/dsh-tools`）由 profile 的 healed `profiles/node_modules` 回退安装提供。
+包内 `dsh.bundle.patch`（指向 `cordis.patch.yml`）会在安装后自动把插件加入 profile 的 layer stack；插件的 `cordis.patch.yml` 以 `- insert:` 插入 `tool-json` 条目。
 
-> ⚠️ web 与 headless 是**不同 profile**：web 安装不会自动覆盖 headless；`dsh run` 默认使用 headless profile。Windows 路径使用正斜杠（`C:/...`）。
+> ⚠️ web 与 headless 是**不同 profile**：web 安装不会自动覆盖 headless；`dsh run` 默认使用 headless profile。
+
+### npm pack tarball 安装
+
+```sh
+npm pack    # 生成 dsh-tool-json-*.tgz
+dsh plugin --profile web add ./dsh-tool-json-*.tgz
+dsh plugin --profile headless add ./dsh-tool-json-*.tgz
+```
 
 ### 验证安装
 
@@ -130,7 +152,7 @@ dsh run "使用 json 工具查询 {"a":{"b":1}} 的 a.b"
 
 5. 验证：`dsh --profile <name> --dump-config | grep tool-json`
 
-> 0806 注意：patch 是 id-targeted 语义——裸 `- id:` 条目会报 `entry "xxx" not found`，必须用 `- insert:` 列表包裹。
+> 注意：patch 是 id-targeted 语义——裸 `- id:` 条目会报 `entry "xxx" not found`，必须用 `- insert:` 列表包裹。
 ## 用法
 
 ```
@@ -141,10 +163,9 @@ json { input: <JSON>, query: "items['complex-key']" }  → "ok"
 
 ## 已知限制
 
-1. 分发链路：`@deepseek-ai/dsh-tools` 私有，需 monorepo workspace
-2. 只读：不能修改 JSON 字段（原地修改用 `str_replace_editor`/`write`；v2 可考虑 `set` 模式）
-3. 无过滤器表达式、无标准 JMESPath 投影扁平化（见语义边界）
-4. 对象形态 input 依赖 DSH 参数管线保证 lossless JSON
+1. 只读：不能修改 JSON 字段（原地修改用 `str_replace_editor`/`write`；v2 可考虑 `set` 模式）
+2. 无过滤器表达式、无标准 JMESPath 投影扁平化（见语义边界）
+3. 对象形态 input 依赖 DSH 参数管线保证 lossless JSON
 
 ## 测试
 

@@ -1,5 +1,7 @@
 # dsh-tool-markdown
 
+[English](README.en.md)
+
 DSH Markdown 工具插件 —— HTML↔Markdown 转换、GFM 表格规范化、目录生成。零依赖、纯函数、手写轻量解析器。
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -71,22 +73,42 @@ markdown { action: "toc", markdown: "# 标题一\n## 小节" }
 | 输入超限 | `markdown: <label> exceeds N bytes`（不截断） |
 | md2html 内嵌 HTML | 原样转义为文本，绝无白名单外标签输出 |
 
+## npm 0.1.0-rc.6 兼容（已验证）
+
+本插件已迁移到 npm 0.1.0-rc.6 依赖线，并在 `@deepseek-ai/dsh@0.1.0-rc.6` 的隔离 consumer 中完成全链路验证：
+
+- **类型/运行时**：`@deepseek-ai/cordis@^4.0.1` + `@deepseek-ai/dsh-tools@>=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants@>=0.0.1-rc.1 <0.2.0`（peer）；不再依赖 unscoped `cordis`
+- **独立构建**：`npm install`（devDependencies 自包含 typescript/vitest/@types/node）→ `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
+- **消费验证**：tarball 装入 0.1.0-rc.6 consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
+- **启动方式**：`npx -p @deepseek-ai/dsh@0.1.0-rc.6 dsh web`（lib 生产模式；勿 `install -g` 全局安装）
+
+
 ## 安装
+
+插件源码仓库：`https://github.com/omdsh-dev/dsh-tool-markdown`（public）。
 
 ### Profile Bundle（推荐）
 
-将本插件作为独立 bundle 安装到 profile（0806+）：
+将本插件作为独立 bundle 安装到 profile（DSH 0.1.0-rc.6，npm）：
 
 ```sh
 # 交互式（web）profile
-dsh plugin --profile web add "C:/path/to/dsh-tool-markdown"
+dsh plugin --profile web add github:omdsh-dev/dsh-tool-markdown
 # 一次性任务（headless）profile —— dsh run 默认使用 headless
-dsh plugin --profile headless add "C:/path/to/dsh-tool-markdown"
+dsh plugin --profile headless add github:omdsh-dev/dsh-tool-markdown
 ```
 
-包内 `dsh.bundle.patch` 会在安装后自动把插件加入 profile 的 layer stack（row id：`tool-markdown`）。插件缺失的 peer 依赖（`cordis`、`@deepseek-ai/dsh-tools`）由 profile 的 healed `profiles/node_modules` 回退安装提供。
+包内 `dsh.bundle.patch` 会在安装后自动把插件加入 profile 的 layer stack（row id：`tool-markdown`）。
 
-> ⚠️ web 与 headless 是**不同 profile**：web 安装不会自动覆盖 headless；`dsh run` 默认使用 headless profile。Windows 路径使用正斜杠（`C:/...`）。
+> ⚠️ web 与 headless 是**不同 profile**：web 安装不会自动覆盖 headless；`dsh run` 默认使用 headless profile。
+
+### npm pack tarball 安装
+
+```sh
+npm pack    # 生成 dsh-tool-markdown-*.tgz
+dsh plugin --profile web add ./dsh-tool-markdown-*.tgz
+dsh plugin --profile headless add ./dsh-tool-markdown-*.tgz
+```
 
 ### 验证安装
 

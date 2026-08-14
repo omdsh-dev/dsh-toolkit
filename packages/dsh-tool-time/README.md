@@ -1,5 +1,7 @@
 # dsh-tool-time
 
+[English](README.en.md)
+
 DSH 时间工具插件 —— 严格 ISO 解析、IANA 时区转换、UTC 日历运算、固定时长差。零依赖、零进程、纯函数。
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -86,27 +88,47 @@ ctx.tools.register(defineTool({
   - 差值超过安全整数范围抛 `time: diff duration out of range`
 - **默认 UTC**：省略 `timezone` 时结果与运行环境无关（`timezoneSource: "default-utc"`）
 
+## npm 0.1.0-rc.6 兼容（已验证）
+
+本插件已迁移到 npm 0.1.0-rc.6 依赖线，并在 `@deepseek-ai/dsh@0.1.0-rc.6`（npm 私有包）的隔离 consumer 中完成全链路验证：
+
+- **类型/运行时**：peer 为 `@deepseek-ai/cordis: ^4.0.1` + `@deepseek-ai/dsh-tools: >=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants: >=0.0.1-rc.1 <0.2.0`；不再依赖 unscoped `cordis`
+- **独立构建**：`npm install`（devDependencies 自包含 typescript/vitest/@types/node）→ `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
+- **消费验证**：tarball 装入 DSH 0.1.0-rc.6（npm）consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
+- **启动方式**：`npx -p @deepseek-ai/dsh@0.1.0-rc.6 dsh web`（lib 生产模式；勿 `install -g` 全局安装）
+
+
 ## 版本适配
 
-- **适配 DSH snapshot**: `20260806T160212Z-279244acb0`（0806 迁移：profile/bundle 插件系统）
+- **适配 DSH**: DSH 0.1.0-rc.6（npm）（profile/bundle 插件系统）
 - **bundle 声明**: `package.json` 的 `dsh.bundle`（patch 指向 `cordis.patch.yml`）+ `exports` 导出
-- **patch 格式**: `cordis.patch.yml` 使用 `- insert:` 列表（0806 的 patch 是 id-targeted 语义，裸 `- id:` 条目会报 `entry not found`）
+- **patch 格式**: `cordis.patch.yml` 使用 `- insert:` 列表（patch 是 id-targeted 语义，裸 `- id:` 条目会报 `entry not found`）
 - **files**: 发布 tarball 含 `lib/`、`src/`、`cordis.patch.yml`
 
 ## 安装
 
 ### Profile Bundle（推荐）
 
-将本插件作为独立 bundle 安装到 profile（0806+）：
+将本插件作为独立 bundle 安装到 profile（DSH 0.1.0-rc.6（npm））。本仓库位于 [omdsh-dev](https://github.com/omdsh-dev) 组织，公开可访问：
 
 ```sh
-# 交互式（web）profile
-dsh plugin --profile web add "C:/path/to/dsh-tool-time"
+# 交互式（web）profile —— 从 GitHub 仓库安装
+dsh plugin --profile web add github:omdsh-dev/dsh-tool-time
 # 一次性任务（headless）profile —— dsh run 默认使用 headless
-dsh plugin --profile headless add "C:/path/to/dsh-tool-time"
+dsh plugin --profile headless add github:omdsh-dev/dsh-tool-time
 ```
 
-包内 `dsh.bundle.patch`（指向 `cordis.patch.yml`）会在安装后自动把插件加入 profile 的 layer stack；插件的 `cordis.patch.yml` 以 `- insert:` 插入 `tool-time` 条目。插件缺失的 peer 依赖（`cordis`、`@deepseek-ai/dsh-tools`）由 profile 的 healed `profiles/node_modules` 回退安装提供。
+或使用 `npm pack` 生成的 tarball 安装：
+
+```sh
+npm pack     # 生成 dsh-tool-time-<version>.tgz
+# 交互式（web）profile
+dsh plugin --profile web add ./dsh-tool-time-<version>.tgz
+# 一次性任务（headless）profile
+dsh plugin --profile headless add ./dsh-tool-time-<version>.tgz
+```
+
+包内 `dsh.bundle.patch`（指向 `cordis.patch.yml`）会在安装后自动把插件加入 profile 的 layer stack；插件的 `cordis.patch.yml` 以 `- insert:` 插入 `tool-time` 条目。插件缺失的 peer 依赖（`@deepseek-ai/cordis`、`@deepseek-ai/dsh-tools`）由 profile 的 healed `profiles/node_modules` 回退安装提供。
 
 > ⚠️ web 与 headless 是**不同 profile**：web 安装不会自动覆盖 headless；`dsh run` 默认使用 headless profile。Windows 路径使用正斜杠（`C:/...`）。
 
@@ -122,9 +144,9 @@ dsh --profile web --dump-config | grep tool-time
 dsh run "使用 time 工具获取当前 UTC 时间"
 ```
 
-### 手动安装与旧版本兼容
+### 手动安装与旧版本兼容（monorepo 旧场景）
 
-仅适用于不支持 Profile Bundle 的旧快照或插件开发调试环境：
+monorepo 方式仅适用于旧场景：不支持 Profile Bundle 的旧快照或插件开发调试环境：
 
 1. 放入 monorepo：`cp -r time ~/.dsh/source/master/packages/tools/time`（开发调试）
 2. `apps/cli/package.json` 加 `"@deepseek-ai/dsh-tool-time": "workspace:^"`；`tsconfig.host.json` references 加 `{ "path": "./packages/tools/time" }`
@@ -139,10 +161,10 @@ dsh run "使用 time 工具获取当前 UTC 时间"
 
 5. 验证：`dsh --profile <name> --dump-config | grep tool-time`
 
-> 0806 注意：patch 是 id-targeted 语义——裸 `- id:` 条目会报 `entry "xxx" not found`，必须用 `- insert:` 列表包裹。
+> 注意：patch 是 id-targeted 语义（DSH 0.1.0-rc.6（npm））——裸 `- id:` 条目会报 `entry "xxx" not found`，必须用 `- insert:` 列表包裹。
 ## 已知限制
 
-1. 分发链路：`@deepseek-ai/dsh-tools` 私有，需 monorepo workspace
+1. 分发链路：peer 依赖（如 `@deepseek-ai/dsh-tools`）为 npm 私有包，独立安装不依赖 monorepo workspace（monorepo 仅旧场景）
 2. `add` 是 UTC 日历运算，非当地墙钟语义（当地墙钟需 v2）
 3. 不支持自然语言日期（"next week"）与日历月/年差（v2）
 4. 时区数据来自 Node 内置 ICU："跨平台一致" = "相同 Node/ICU 数据下一致"

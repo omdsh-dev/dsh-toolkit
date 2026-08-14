@@ -48,9 +48,11 @@ dsh-toolkit/
 
 > 与实施文档方案 A 的工程化适配：子包为私有未发布包，peer 名解析在 profile 内不可行，
 > 故 meta 包采用**相对路径动态导入**（零解析魔法、打包自足）；子包 runtime 依赖
-> （`@deepseek-ai/dsh-tools`）经子包自身构建期 junction 解析。
+> （`@deepseek-ai/dsh-tools`）在 npm 独立模式（默认）下不依赖 DSH monorepo，monorepo 模式经子包构建期 junction 解析。
 
 ## 安装
+
+仓库位于 [omdsh-dev/dsh-toolkit](https://github.com/omdsh-dev/dsh-toolkit)（public）。
 
 ### 独立 bundle 模型（推荐）
 
@@ -58,9 +60,9 @@ dsh-toolkit/
 
 ```sh
 # 安装单个工具到 web profile
-dsh plugin --profile web add "C:/path/to/dsh-toolkit/packages/dsh-tool-csv"
+dsh plugin --profile web add github:omdsh-dev/dsh-tool-csv
 # 一次性任务（headless）profile
-dsh plugin --profile headless add "C:/path/to/dsh-toolkit/packages/dsh-tool-diff"
+dsh plugin --profile headless add github:omdsh-dev/dsh-tool-diff
 ```
 
 批量安装（collection 辅助脚本，幂等——重复执行不会重复添加）：
@@ -81,12 +83,22 @@ dsh run "使用 csv 工具解析 'a,b\n1,2'"               # headless 端到端
 > ⚠️ web 与 headless 是**不同 profile**：web 安装不会自动覆盖 headless；`dsh run` 默认使用 headless。
 > Windows 路径使用正斜杠（`C:/...`）。
 
+### npm pack tarball 安装
+
+本地构建后用 tarball 路径安装（不依赖 GitHub）：
+
+```sh
+# tarball 方式（web 为例；headless 同）
+npm pack
+dsh plugin --profile web add <npm pack 产物 tarball 路径>
+```
+
 ### meta bundle 模型（可选）
 
 需要一次原子挂载全部工具时，挂载根 meta 包：
 
 ```sh
-dsh plugin --profile web add "C:/path/to/dsh-toolkit"
+dsh plugin --profile web add github:omdsh-dev/dsh-toolkit
 dsh --profile web --dump-config | grep tool-kit
 ```
 
@@ -96,28 +108,28 @@ dsh --profile web --dump-config | grep tool-kit
 
 ### 手动安装与旧版本兼容
 
-仅适用于不支持 Profile Bundle 的旧快照或插件开发调试环境（本地 junction/symlink、手动编辑 profile 层）。
+旧场景（monorepo 集成、不支持 Profile Bundle 的旧快照或插件开发调试环境——本地 junction/symlink、手动编辑 profile 层）。
 
 ## 构建与测试
 
 **npm 独立模式（默认，推荐）**：无需 DSH monorepo；`npm install`（devDependencies 自包含）后即可：
 
 ```bash
-bash scripts/build-all.sh   # 10 子包 + meta 包 tsc + 产物完整性验证（无 .ts 残留导入、10+1 个 lib/index.js）
+npm run build:all           # 10 子包 + meta 包 tsc + 产物完整性验证（无 .ts 残留导入、10+1 个 lib/index.js）
 bash scripts/test-all.sh    # 10 子包 vitest 全量（723 用例）；任一失败整体非零退出
 npm pack                    # prepack 自包含（build:all），tarball 含 lib + 10 个子包
 ```
 
-**monorepo 模式（源码贡献/旧 snapshot）**：显式提供 DSH monorepo 根：
+**monorepo 模式（可选：源码贡献/旧 snapshot）**：显式提供 DSH monorepo 根：
 
 ```bash
-export DSH_MONOREPO=/c/Users/admin/.dsh/source/staging-20260808T121140Z   # 或作为第一个参数
+export DSH_MONOREPO=<DSH 0.1.0-rc.6（npm）安装路径>   # 或作为第一个参数
 bash scripts/build-all.sh   # link-deps + 10 子包 + meta 包 tsc + 产物完整性验证
 bash scripts/test-all.sh
 ```
 
 > `prepack` 已指向 `build:all`（完整构建 10 子包 + meta），保证发布 tarball 含全部运行入口。
-> npm rc.1 兼容（已验证）：peer 全部为 `@deepseek-ai/cordis@^4.0.1-rc.1` 等 scoped 包；已在 `@deepseek-ai/dsh@0.0.1-rc.1` 隔离 consumer 中完成 profile compose（tool-kit row）与 10 工具真实注册/执行验证。
+> npm 0.1.0-rc.6 兼容（已验证）：peer 全部为 `@deepseek-ai/cordis@^4.0.1` 等 scoped 包；已在 `@deepseek-ai/dsh@0.1.0-rc.6` 隔离 consumer 中完成 profile compose（tool-kit row）与 10 工具真实注册/执行验证。
 
 
 ## 同步 vendored（子仓库有更新时）

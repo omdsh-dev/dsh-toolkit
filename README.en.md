@@ -48,9 +48,11 @@ dsh-toolkit/
 
 > Engineering adaptation of Plan A in the implementation document: the sub-packages are private unpublished packages, so peer-name resolution is not feasible inside a profile;
 > therefore the meta package uses **relative-path dynamic imports** (zero resolution magic, self-contained packaging); the sub-packages' runtime dependency
-> (`@deepseek-ai/dsh-tools`) is resolved via each sub-package's own build-time junction.
+> (`@deepseek-ai/dsh-tools`) does not depend on the DSH monorepo in npm standalone mode (default); in monorepo mode it is resolved via each sub-package's own build-time junction.
 
 ## Installation
+
+The repository lives at [omdsh-dev/dsh-toolkit](https://github.com/omdsh-dev/dsh-toolkit) (public).
 
 ### Standalone Bundle Model (Recommended)
 
@@ -58,9 +60,9 @@ Each sub-package can be independently installed, enabled, disabled, and uninstal
 
 ```sh
 # 安装单个工具到 web profile
-dsh plugin --profile web add "C:/path/to/dsh-toolkit/packages/dsh-tool-csv"
+dsh plugin --profile web add github:omdsh-dev/dsh-tool-csv
 # 一次性任务（headless）profile
-dsh plugin --profile headless add "C:/path/to/dsh-toolkit/packages/dsh-tool-diff"
+dsh plugin --profile headless add github:omdsh-dev/dsh-tool-diff
 ```
 
 Batch installation (collection helper scripts, idempotent — re-running does not add duplicates):
@@ -81,12 +83,22 @@ dsh run "使用 csv 工具解析 'a,b\n1,2'"               # headless 端到端
 > ⚠️ web and headless are **different profiles**: installing to web does not automatically cover headless; `dsh run` uses headless by default.
 > Windows paths use forward slashes (`C:/...`).
 
+### Installing from an npm pack Tarball
+
+Build locally and install from the tarball path (no GitHub dependency):
+
+```sh
+# tarball method (web shown; headless same)
+npm pack
+dsh plugin --profile web add <path to the npm pack tarball>
+```
+
 ### Meta Bundle Model (Optional)
 
 When all tools need to be mounted atomically in one shot, mount the root meta package:
 
 ```sh
-dsh plugin --profile web add "C:/path/to/dsh-toolkit"
+dsh plugin --profile web add github:omdsh-dev/dsh-toolkit
 dsh --profile web --dump-config | grep tool-kit
 ```
 
@@ -96,28 +108,28 @@ dsh --profile web --dump-config | grep tool-kit
 
 ### Manual Installation & Legacy Compatibility
 
-Only for legacy snapshots that do not support Profile Bundle, or plugin development/debugging environments (local junction/symlink, manually editing profile layers).
+Legacy scenarios: monorepo integration, legacy snapshots that do not support Profile Bundle, or plugin development/debugging environments (local junction/symlink, manually editing profile layers).
 
 ## Build & Test
 
 **npm standalone mode (default, recommended)**: no DSH monorepo needed; after `npm install` (self-contained devDependencies):
 
 ```bash
-bash scripts/build-all.sh   # 10 子包 + meta 包 tsc + 产物完整性验证（无 .ts 残留导入、10+1 个 lib/index.js）
+npm run build:all           # 10 子包 + meta 包 tsc + 产物完整性验证（无 .ts 残留导入、10+1 个 lib/index.js）
 bash scripts/test-all.sh    # 10 子包 vitest 全量（723 用例）；任一失败整体非零退出
 npm pack                    # prepack 自包含（build:all），tarball 含 lib + 10 个子包
 ```
 
-**Monorepo mode (source contribution / legacy snapshots)**: explicitly provide the DSH monorepo root:
+**Monorepo mode (optional: source contribution / legacy snapshots)**: explicitly provide the DSH monorepo root:
 
 ```bash
-export DSH_MONOREPO=/c/Users/admin/.dsh/source/staging-20260808T121140Z   # 或作为第一个参数
+export DSH_MONOREPO=<DSH 0.1.0-rc.6 (npm) install path>   # 或作为第一个参数
 bash scripts/build-all.sh   # link-deps + 10 子包 + meta 包 tsc + 产物完整性验证
 bash scripts/test-all.sh
 ```
 
 > `prepack` points to `build:all` (full build of the 10 sub-packages + meta), guaranteeing that the published tarball contains all runtime entry points.
-> npm rc.1 compatibility (verified): all peers are scoped packages such as `@deepseek-ai/cordis@^4.0.1-rc.1`; profile compose (tool-kit row) and real registration/execution of the 10 tools have been verified in an isolated `@deepseek-ai/dsh@0.0.1-rc.1` consumer.
+> npm 0.1.0-rc.6 compatibility (verified): all peers are scoped packages such as `@deepseek-ai/cordis@^4.0.1`; profile compose (tool-kit row) and real registration/execution of the 10 tools have been verified in an isolated `@deepseek-ai/dsh@0.1.0-rc.6` consumer.
 
 ## Syncing Vendored Packages (When Sub-repositories Are Updated)
 
