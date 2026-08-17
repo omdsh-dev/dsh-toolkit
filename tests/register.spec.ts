@@ -28,10 +28,13 @@ describe('dsh-toolkit: meta 契约（审查 TK-06 原子性）', () => {
     expect(inject).toContain('tools')
   })
 
-  it('registers all 6 tools through apply (real subplugin modules)', async () => {
+  it('registers all 10 tools through apply (real subplugin modules)', async () => {
     const { ctx, registered, disposed } = makeCtx(null)
     await apply(ctx)
-    expect(registered).toEqual(['time', 'encoding', 'json', 'calculator', 'csv', 'regex'])
+    expect(registered).toEqual([
+      'time', 'encoding', 'json', 'calculator', 'csv',
+      'regex', 'markdown', 'diff', 'stat', 'schema',
+    ])
     expect(disposed).toEqual([])
   })
 

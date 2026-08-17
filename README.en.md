@@ -8,9 +8,11 @@ DSH zero-dependency toolkit collection — ten deterministic tools: time / encod
 
 ## Why
 
-DSH ecosystem repositories keep growing, and a single plugin is easily drowned out in the hub; the collection category is the form with the highest recognizability. This repository **vendors and freezes** the 10 tool plugins as release-state snapshots (each sub-repository evolves independently, all public under the [omdsh-dev](https://github.com/omdsh-dev) organization), with unified engineering, unified testing, and unified maintenance.
+DSH ecosystem repositories keep growing, and a single plugin is easily drowned out in the hub; the collection category is the form with the highest recognizability. This repository **vendors and freezes** the 10 tool plugins as pack-artifact snapshots (each sub-repository evolves independently, with the current source under the [omdsh-dev](https://github.com/omdsh-dev) organization), with unified engineering, unified testing, and unified maintenance.
 
 **Positioning (in line with the official Profile Bundle ecosystem direction)**: this repository is a **collection and installation-aid repository** — every sub-package is a bundle that can be independently installed/enabled/disabled/uninstalled (`dsh plugin --profile <p> add <sub-package>`); the collection provides the catalog, the manifest, and batch installation scripts. The meta package `@deepseek-ai/dsh-toolkit` is retained as an **optional** atomic-mount model (see the two runtime models below).
+
+**Distribution boundary**: the root meta package remains `private: true` for Git/collection distribution; this does not mean it is published to the npm registry. The root `lib/index.js` and `lib/types/index.d.ts` are committed build outputs from the current `src`, so Git installation does not depend on a consumer-side lifecycle; `prepack` remains enabled for creating a pack artifact.
 
 ## Tools at a Glance
 
@@ -33,7 +35,7 @@ DSH ecosystem repositories keep growing, and a single plugin is easily drowned o
 ```
 dsh-toolkit/
 ├── src/index.ts          # meta 包：相对路径动态导入 10 个子包 apply()，聚合注册
-├── packages/dsh-tool-*   # vendored 子包（发布态快照，name 保持 @deepseek-ai/dsh-tool-*）
+├── packages/dsh-tool-*   # vendored subpackages (pack-artifact snapshots; names remain @deepseek-ai/dsh-tool-*)
 ├── scripts/
 │   ├── link-deps.sh      # 构建期 junction（cordis → vendor/cordis，dsh-tools → packages/core/tools）
 │   ├── build-all.sh      # 一键构建 10 子包 + meta 包（tsc）
@@ -46,7 +48,7 @@ dsh-toolkit/
 └── tsconfig.base.json    # 共享编译配置（固化踩坑经验）
 ```
 
-> Engineering adaptation of Plan A in the implementation document: the sub-packages are private unpublished packages, so peer-name resolution is not feasible inside a profile;
+> Engineering adaptation of Plan A in the implementation document: the sub-packages are private Git/collection packages, so peer-name resolution is not feasible inside a profile;
 > therefore the meta package uses **relative-path dynamic imports** (zero resolution magic, self-contained packaging); the sub-packages' runtime dependency
 > (`@deepseek-ai/dsh-tools`) does not depend on the DSH monorepo in npm standalone mode (default); in monorepo mode it is resolved via each sub-package's own build-time junction.
 
@@ -128,8 +130,8 @@ bash scripts/build-all.sh   # link-deps + 10 子包 + meta 包 tsc + 产物完�
 bash scripts/test-all.sh
 ```
 
-> `prepack` points to `build:all` (full build of the 10 sub-packages + meta), guaranteeing that the published tarball contains all runtime entry points.
-> npm 0.1.0-rc.6 compatibility (verified): all peers are scoped packages such as `@deepseek-ai/cordis@^4.0.1`; profile compose (tool-kit row) and real registration/execution of the 10 tools have been verified in an isolated `@deepseek-ai/dsh@0.1.0-rc.6` consumer.
+> `prepack` points to `build:all` (full build of the 10 sub-packages + meta), guaranteeing that the pack artifact contains all runtime entry points; the root Git entry is prebuilt from the current `src` and committed.
+> This repository validates the build, tests, and pack artifact locally only; do not interpret that as an npm registry publication or as consumer/profile validation that was not run here.
 
 ## Syncing Vendored Packages (When Sub-repositories Are Updated)
 

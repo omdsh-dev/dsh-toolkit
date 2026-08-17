@@ -8,9 +8,11 @@ DSH 零依赖工具包 collection —— time / encoding / json / calculator / c
 
 ## 为什么
 
-DSH 生态仓库持续增长，单插件在 hub 中容易被淹没；collection 分类是辨识度最高的形态。本仓库把 10 个工具插件 **vendored 冻结**为发布态快照（各子仓库独立演进，均位于 [omdsh-dev](https://github.com/omdsh-dev) 组织下公开），统一工程、统一测试、统一维护。
+DSH 生态仓库持续增长，单插件在 hub 中容易被淹没；collection 分类是辨识度最高的形态。本仓库把 10 个工具插件 **vendored 冻结**为 pack artifact 快照（各子仓库独立演进，当前源位于 [omdsh-dev](https://github.com/omdsh-dev) 组织下），统一工程、统一测试、统一维护。
 
 **定位（官方 Profile Bundle 生态方向）**：本仓库是 **collection 与安装辅助仓库**——每个子包都是可独立安装/启用/禁用/卸载的 bundle（`dsh plugin --profile <p> add <子包>`）；collection 提供目录、清单与批量安装脚本。meta 包 `@deepseek-ai/dsh-toolkit` 保留为**可选**的原子挂载模型（见下文两种运行模型）。
+
+**分发边界**：根 meta 包保持 `private: true`，用于 Git/collection 分发，不代表会发布到 npm registry。根目录已提交由当前 `src` 构建出的 `lib/index.js` 与 `lib/types/index.d.ts`，因此从 Git 安装时不依赖消费端 lifecycle；`prepack` 仍会在生成 pack artifact 前执行完整构建。
 
 ## 工具一览
 
@@ -33,7 +35,7 @@ DSH 生态仓库持续增长，单插件在 hub 中容易被淹没；collection 
 ```
 dsh-toolkit/
 ├── src/index.ts          # meta 包：相对路径动态导入 10 个子包 apply()，聚合注册
-├── packages/dsh-tool-*   # vendored 子包（发布态快照，name 保持 @deepseek-ai/dsh-tool-*）
+├── packages/dsh-tool-*   # vendored 子包（pack artifact 快照，name 保持 @deepseek-ai/dsh-tool-*）
 ├── scripts/
 │   ├── link-deps.sh      # 构建期 junction（cordis → vendor/cordis，dsh-tools → packages/core/tools）
 │   ├── build-all.sh      # 一键构建 10 子包 + meta 包（tsc）
@@ -46,7 +48,7 @@ dsh-toolkit/
 └── tsconfig.base.json    # 共享编译配置（固化踩坑经验）
 ```
 
-> 与实施文档方案 A 的工程化适配：子包为私有未发布包，peer 名解析在 profile 内不可行，
+> 与实施文档方案 A 的工程化适配：子包为私有 Git/collection 包，peer 名解析在 profile 内不可行，
 > 故 meta 包采用**相对路径动态导入**（零解析魔法、打包自足）；子包 runtime 依赖
 > （`@deepseek-ai/dsh-tools`）在 npm 独立模式（默认）下不依赖 DSH monorepo，monorepo 模式经子包构建期 junction 解析。
 
@@ -128,8 +130,8 @@ bash scripts/build-all.sh   # link-deps + 10 子包 + meta 包 tsc + 产物完�
 bash scripts/test-all.sh
 ```
 
-> `prepack` 已指向 `build:all`（完整构建 10 子包 + meta），保证发布 tarball 含全部运行入口。
-> npm 0.1.0-rc.6 兼容（已验证）：peer 全部为 `@deepseek-ai/cordis@^4.0.1` 等 scoped 包；已在 `@deepseek-ai/dsh@0.1.0-rc.6` 隔离 consumer 中完成 profile compose（tool-kit row）与 10 工具真实注册/执行验证。
+> `prepack` 已指向 `build:all`（完整构建 10 子包 + meta），保证 pack artifact 含全部运行入口；根 Git 入口由当前 `src` 预构建并提交。
+> 本仓库只在本地验证构建、测试与 pack artifact；不要将这些结果解读为 npm registry 发布或未实际执行的 consumer/profile 验证。
 
 
 ## 同步 vendored（子仓库有更新时）

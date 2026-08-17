@@ -5,6 +5,10 @@
 # - npm 独立模式（默认）：使用本仓库 node_modules 的 typescript（npm install 后即可用，无 DSH_MONOREPO）；
 # - monorepo 模式：显式提供 DSH_MONOREPO 环境变量或第一个参数（见 link-deps.sh）。
 set -eu
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+ROOT_DIR=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
+cd "$ROOT_DIR"
+
 MONOREPO="${DSH_MONOREPO:-${1:-}}"
 if [ -n "$MONOREPO" ]; then
   TSC_ROOT="$(printf '%s' "$MONOREPO" | sed -e 's|^/\([a-zA-Z]\)/|\u\1:/|' -e 's|\\|/|g' | sed 's|/$||')/node_modules/typescript/bin/tsc"
@@ -15,14 +19,18 @@ else
 fi
 
 for P in packages/dsh-tool-*; do
-  echo "== build $P"
+  echo "== clean/build $P"
+  rm -rf "$P/lib"
   (cd "$P" && node "$TSC_ROOT" -p tsconfig.json) || exit 1
 done
-echo "== build meta (dsh-toolkit)"
+echo "== clean/build meta (dsh-toolkit)"
+# Always remove the root output before compiling so committed entry files are
+# produced from the current src tree rather than retained stale artifacts.
+rm -rf lib
 node "$TSC_ROOT" -p tsconfig.json || exit 1
 
 # 产物完整性验证（TK-01/TK-07）：
-# 1) 根 + 9 个子包的 lib/index.js 必须存在
+# 1) 根 + 10 个子包的 lib/index.js 必须存在
 EXPECTED="packages/dsh-tool-calculator packages/dsh-tool-csv packages/dsh-tool-diff packages/dsh-tool-encoding packages/dsh-tool-json packages/dsh-tool-markdown packages/dsh-tool-regex packages/dsh-tool-time packages/dsh-tool-stat packages/dsh-tool-schema"
 for P in $EXPECTED; do
   [ -f "$P/lib/index.js" ] || { echo "error: missing $P/lib/index.js" >&2; exit 1; }
