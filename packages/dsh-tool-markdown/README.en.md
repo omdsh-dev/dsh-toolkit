@@ -73,14 +73,14 @@ markdown { action: "toc", markdown: "# 标题一\n## 小节" }
 | Input over limit | `markdown: <label> exceeds N bytes` (no truncation) |
 | Embedded HTML in md2html | Escaped as text as-is; whitelist-external tags are never output |
 
-## npm 0.1.0-rc.6 compatibility (verified)
+## npm 0.1.0-rc.7 compatibility (verified)
 
-This plugin has been migrated to the npm 0.1.0-rc.6 dependency line and fully verified in an isolated consumer of `@deepseek-ai/dsh@0.1.0-rc.6`:
+This plugin has been migrated to the npm 0.1.0-rc.7 dependency line and fully verified in an isolated consumer of `@deepseek-ai/dsh@0.1.0-rc.7`:
 
 - **Types/runtime**: `@deepseek-ai/cordis@^4.0.1` + `@deepseek-ai/dsh-tools@>=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants@>=0.0.1-rc.1 <0.2.0` (peer); no longer depends on unscoped `cordis`
 - **Standalone build**: `npm install` (devDependencies are self-contained: typescript/vitest/@types/node) → `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
-- **Consumption verification**: tarball installed into the 0.1.0-rc.6 consumer → `dsh --profile compat --dump-config` shows this plugin's row → the tool actually registers and executes
-- **Startup**: `npx -p @deepseek-ai/dsh@0.1.0-rc.6 dsh web` (lib production mode; do not `install -g` globally)
+- **Consumption verification**: tarball installed into the 0.1.0-rc.7 consumer → `dsh --profile compat --dump-config` shows this plugin's row → the tool actually registers and executes
+- **Startup**: `npx -p @deepseek-ai/dsh@0.1.0-rc.7 dsh web` (lib production mode; do not `install -g` globally)
 
 
 ## Installation
@@ -89,7 +89,7 @@ Plugin source repository: `https://github.com/omdsh-dev/dsh-tool-markdown` (publ
 
 ### Profile Bundle (recommended)
 
-Install this plugin as a standalone bundle into a profile (DSH 0.1.0-rc.6, npm):
+Install this plugin as a standalone bundle into a profile (DSH 0.1.0-rc.7, npm):
 
 ```sh
 # 交互式（web）profile

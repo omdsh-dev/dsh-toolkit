@@ -21,9 +21,9 @@
     "prepack": "npm run build:all"
   },
   "peerDependencies": {
-    "@deepseek-ai/dsh-tools": ">=0.0.1-rc.1 <0.2.0",
     "@deepseek-ai/cordis": "^4.0.1",
-    "@deepseek-ai/dsh-invariants": ">=0.0.1-rc.1 <0.2.0"
+    "@deepseek-ai/dsh-invariants": ">=0.0.1-rc.1 <0.2.0",
+    "@deepseek-ai/dsh-tools": ">=0.0.1-rc.1 <0.2.0"
   },
   "dsh": {
     "bundle": {
@@ -46,6 +46,8 @@
     "cordis.patch.yml"
   ],
   "devDependencies": {
+    "@deepseek-ai/dsh-invariants": "^0.1.0-rc.7",
+    "@deepseek-ai/dsh-tools": "^0.1.0-rc.7",
     "@types/node": "^26.2.0",
     "typescript": "^7.0.2",
     "vitest": "^4.1.10"

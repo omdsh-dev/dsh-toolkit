@@ -88,19 +88,19 @@ ctx.tools.register(defineTool({
   - 差值超过安全整数范围抛 `time: diff duration out of range`
 - **默认 UTC**：省略 `timezone` 时结果与运行环境无关（`timezoneSource: "default-utc"`）
 
-## npm 0.1.0-rc.6 兼容（已验证）
+## npm 0.1.0-rc.7 兼容（已验证）
 
-本插件已迁移到 npm 0.1.0-rc.6 依赖线，并在 `@deepseek-ai/dsh@0.1.0-rc.6`（npm 私有包）的隔离 consumer 中完成全链路验证：
+本插件已迁移到 npm 0.1.0-rc.7 依赖线，并在 `@deepseek-ai/dsh@0.1.0-rc.7`（npm 私有包）的隔离 consumer 中完成全链路验证：
 
 - **类型/运行时**：peer 为 `@deepseek-ai/cordis: ^4.0.1` + `@deepseek-ai/dsh-tools: >=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants: >=0.0.1-rc.1 <0.2.0`；不再依赖 unscoped `cordis`
 - **独立构建**：`npm install`（devDependencies 自包含 typescript/vitest/@types/node）→ `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
-- **消费验证**：tarball 装入 DSH 0.1.0-rc.6（npm）consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
-- **启动方式**：`npx -p @deepseek-ai/dsh@0.1.0-rc.6 dsh web`（lib 生产模式；勿 `install -g` 全局安装）
+- **消费验证**：tarball 装入 DSH 0.1.0-rc.7（npm）consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
+- **启动方式**：`npx -p @deepseek-ai/dsh@0.1.0-rc.7 dsh web`（lib 生产模式；勿 `install -g` 全局安装）
 
 
 ## 版本适配
 
-- **适配 DSH**: DSH 0.1.0-rc.6（npm）（profile/bundle 插件系统）
+- **适配 DSH**: DSH 0.1.0-rc.7（npm）（profile/bundle 插件系统）
 - **bundle 声明**: `package.json` 的 `dsh.bundle`（patch 指向 `cordis.patch.yml`）+ `exports` 导出
 - **patch 格式**: `cordis.patch.yml` 使用 `- insert:` 列表（patch 是 id-targeted 语义，裸 `- id:` 条目会报 `entry not found`）
 - **files**: 发布 tarball 含 `lib/`、`src/`、`cordis.patch.yml`
@@ -109,7 +109,7 @@ ctx.tools.register(defineTool({
 
 ### Profile Bundle（推荐）
 
-将本插件作为独立 bundle 安装到 profile（DSH 0.1.0-rc.6（npm））。本仓库位于 [omdsh-dev](https://github.com/omdsh-dev) 组织，公开可访问：
+将本插件作为独立 bundle 安装到 profile（DSH 0.1.0-rc.7（npm））。本仓库位于 [omdsh-dev](https://github.com/omdsh-dev) 组织，公开可访问：
 
 ```sh
 # 交互式（web）profile —— 从 GitHub 仓库安装
@@ -161,7 +161,7 @@ monorepo 方式仅适用于旧场景：不支持 Profile Bundle 的旧快照或�
 
 5. 验证：`dsh --profile <name> --dump-config | grep tool-time`
 
-> 注意：patch 是 id-targeted 语义（DSH 0.1.0-rc.6（npm））——裸 `- id:` 条目会报 `entry "xxx" not found`，必须用 `- insert:` 列表包裹。
+> 注意：patch 是 id-targeted 语义（DSH 0.1.0-rc.7（npm））——裸 `- id:` 条目会报 `entry "xxx" not found`，必须用 `- insert:` 列表包裹。
 ## 已知限制
 
 1. 分发链路：peer 依赖（如 `@deepseek-ai/dsh-tools`）为 npm 私有包，独立安装不依赖 monorepo workspace（monorepo 仅旧场景）

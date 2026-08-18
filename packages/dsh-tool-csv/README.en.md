@@ -79,21 +79,21 @@ csv { action: "stats", csv: "name,city\nalice,nyc" }
 | Input over 256KB | Errors directly (no truncation) |
 | Hundred-thousand-row input | Single-pass aggregation computes column widths (no spread), no RangeError |
 
-## npm 0.1.0-rc.6 Compatibility (Verified)
+## npm 0.1.0-rc.7 Compatibility (Verified)
 
-This plugin has been migrated to the npm 0.1.0-rc.6 dependency line and fully verified end-to-end in an isolated consumer of `@deepseek-ai/dsh@0.1.0-rc.6`:
+This plugin has been migrated to the npm 0.1.0-rc.7 dependency line and fully verified end-to-end in an isolated consumer of `@deepseek-ai/dsh@0.1.0-rc.7`:
 
 - **Types/runtime**: `@deepseek-ai/cordis: ^4.0.1` + `@deepseek-ai/dsh-tools: >=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants: >=0.0.1-rc.1 <0.2.0` (peer); no longer depends on unscoped `cordis`
 - **Standalone build**: `npm install` (devDependencies self-contained: typescript/vitest/@types/node) → `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
-- **Consumption verification**: tarball loaded into a 0.1.0-rc.6 consumer → `dsh --profile compat --dump-config` shows this plugin's row → the tool genuinely registers and executes
-- **Launch method**: `npx -p @deepseek-ai/dsh@0.1.0-rc.6 dsh web` (lib production mode; don't `install -g` globally)
+- **Consumption verification**: tarball loaded into a 0.1.0-rc.7 consumer → `dsh --profile compat --dump-config` shows this plugin's row → the tool genuinely registers and executes
+- **Launch method**: `npx -p @deepseek-ai/dsh@0.1.0-rc.7 dsh web` (lib production mode; don't `install -g` globally)
 
 
 ## Installation
 
 ### Profile Bundle (Recommended)
 
-As of DSH 0.1.0-rc.6 (npm), this plugin can be installed into any profile as a standalone bundle in one step (repositories live at https://github.com/omdsh-dev, public):
+As of DSH 0.1.0-rc.7 (npm), this plugin can be installed into any profile as a standalone bundle in one step (repositories live at https://github.com/omdsh-dev, public):
 
 ```sh
 # 交互式（web）profile

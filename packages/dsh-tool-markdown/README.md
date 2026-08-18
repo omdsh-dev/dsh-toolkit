@@ -73,14 +73,14 @@ markdown { action: "toc", markdown: "# 标题一\n## 小节" }
 | 输入超限 | `markdown: <label> exceeds N bytes`（不截断） |
 | md2html 内嵌 HTML | 原样转义为文本，绝无白名单外标签输出 |
 
-## npm 0.1.0-rc.6 兼容（已验证）
+## npm 0.1.0-rc.7 兼容（已验证）
 
-本插件已迁移到 npm 0.1.0-rc.6 依赖线，并在 `@deepseek-ai/dsh@0.1.0-rc.6` 的隔离 consumer 中完成全链路验证：
+本插件已迁移到 npm 0.1.0-rc.7 依赖线，并在 `@deepseek-ai/dsh@0.1.0-rc.7` 的隔离 consumer 中完成全链路验证：
 
 - **类型/运行时**：`@deepseek-ai/cordis@^4.0.1` + `@deepseek-ai/dsh-tools@>=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants@>=0.0.1-rc.1 <0.2.0`（peer）；不再依赖 unscoped `cordis`
 - **独立构建**：`npm install`（devDependencies 自包含 typescript/vitest/@types/node）→ `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
-- **消费验证**：tarball 装入 0.1.0-rc.6 consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
-- **启动方式**：`npx -p @deepseek-ai/dsh@0.1.0-rc.6 dsh web`（lib 生产模式；勿 `install -g` 全局安装）
+- **消费验证**：tarball 装入 0.1.0-rc.7 consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
+- **启动方式**：`npx -p @deepseek-ai/dsh@0.1.0-rc.7 dsh web`（lib 生产模式；勿 `install -g` 全局安装）
 
 
 ## 安装
@@ -89,7 +89,7 @@ markdown { action: "toc", markdown: "# 标题一\n## 小节" }
 
 ### Profile Bundle（推荐）
 
-将本插件作为独立 bundle 安装到 profile（DSH 0.1.0-rc.6，npm）：
+将本插件作为独立 bundle 安装到 profile（DSH 0.1.0-rc.7，npm）：
 
 ```sh
 # 交互式（web）profile

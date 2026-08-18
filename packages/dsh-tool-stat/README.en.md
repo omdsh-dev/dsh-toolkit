@@ -80,20 +80,20 @@ node <monorepo>/node_modules/typescript/bin/tsc -p tsconfig.json
 node <monorepo>/node_modules/vitest/vitest.mjs run tests
 ```
 
-## npm 0.1.0-rc.6 Compatibility (Verified)
+## npm 0.1.0-rc.7 Compatibility (Verified)
 
-This plugin has been migrated to the npm 0.1.0-rc.6 dependency line and fully verified end-to-end in an isolated consumer of `@deepseek-ai/dsh@0.1.0-rc.6` (npm private package):
+This plugin has been migrated to the npm 0.1.0-rc.7 dependency line and fully verified end-to-end in an isolated consumer of `@deepseek-ai/dsh@0.1.0-rc.7` (npm private package):
 
 - **Types/runtime**: peers are `@deepseek-ai/cordis: ^4.0.1` + `@deepseek-ai/dsh-tools: >=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants: >=0.0.1-rc.1 <0.2.0`; no longer depends on the unscoped `cordis`
 - **Standalone build**: `npm install` (devDependencies are self-contained: typescript/vitest/@types/node) → `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
-- **Consumption verification**: tarball installed into a DSH 0.1.0-rc.6 (npm) consumer → `dsh --profile compat --dump-config` shows this plugin's row → tool registration and execution actually pass
-- **Launch method**: `npx -p @deepseek-ai/dsh@0.1.0-rc.6 dsh web` (lib production mode; do not `install -g` globally)
+- **Consumption verification**: tarball installed into a DSH 0.1.0-rc.7 (npm) consumer → `dsh --profile compat --dump-config` shows this plugin's row → tool registration and execution actually pass
+- **Launch method**: `npx -p @deepseek-ai/dsh@0.1.0-rc.7 dsh web` (lib production mode; do not `install -g` globally)
 
 ## Installation
 
 ### Profile Bundle (Recommended)
 
-Install this plugin into a profile as a standalone bundle (DSH 0.1.0-rc.6 (npm)). This repository lives under the [omdsh-dev](https://github.com/omdsh-dev) organization and is publicly accessible:
+Install this plugin into a profile as a standalone bundle (DSH 0.1.0-rc.7 (npm)). This repository lives under the [omdsh-dev](https://github.com/omdsh-dev) organization and is publicly accessible:
 
 ```sh
 # Interactive (web) profile —— install from the GitHub repository
