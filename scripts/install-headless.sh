@@ -11,4 +11,4 @@ for plugin in "$root"/packages/dsh-tool-*; do
 done
 
 dsh --profile "$profile" --dump-config \
-  | grep -E 'tool-time|tool-encoding|tool-json|tool-calculator|tool-csv|tool-regex|tool-markdown|tool-diff'
+  | grep -E 'tool-time|tool-encoding|tool-json|tool-calculator|tool-csv|tool-regex|tool-markdown|tool-diff|tool-stat|tool-schema'

@@ -76,21 +76,21 @@ regex { action: "explain", pattern: "\\d{4}-\\d{2}" }
 | explain 节点超 4,096 | `regex: explain: pattern too complex` |
 | `$` 引用 | 走 JS 原生字符串替换路径：`$$`→`$`、`$n`→组（未参与→空串）、`$<name>`→命名组、未知引用字面保留（`$0`/`$<foo>` 与 V8 一致） |
 
-## npm 0.1.0-rc.7 兼容（已验证）
+## npm 0.1.0-rc.8 兼容（已验证）
 
-本插件已迁移到 npm 0.1.0-rc.7 依赖线，并在 `@deepseek-ai/dsh@0.1.0-rc.7`（npm 私有包）的隔离 consumer 中完成全链路验证：
+本插件已迁移到 npm 0.1.0-rc.8 依赖线，并在 `@deepseek-ai/dsh@0.1.0-rc.8`（npm 私有包）的隔离 consumer 中完成全链路验证：
 
 - **类型/运行时**：peer 为 `@deepseek-ai/cordis: ^4.0.1` + `@deepseek-ai/dsh-tools: >=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants: >=0.0.1-rc.1 <0.2.0`；不再依赖 unscoped `cordis`
 - **独立构建**：`npm install`（devDependencies 自包含 typescript/vitest/@types/node）→ `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
-- **消费验证**：tarball 装入 DSH 0.1.0-rc.7（npm）consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
-- **启动方式**：`npx -p @deepseek-ai/dsh@0.1.0-rc.7 dsh web`（lib 生产模式；勿 `install -g` 全局安装）
+- **消费验证**：tarball 装入 DSH 0.1.0-rc.8（npm）consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
+- **启动方式**：`npx -p @deepseek-ai/dsh@0.1.0-rc.8 dsh web`（lib 生产模式；勿 `install -g` 全局安装）
 
 
 ## 安装
 
 ### Profile Bundle（推荐）
 
-将本插件作为独立 bundle 安装到 profile（DSH 0.1.0-rc.7（npm））。本仓库位于 [omdsh-dev](https://github.com/omdsh-dev) 组织，公开可访问：
+将本插件作为独立 bundle 安装到 profile（DSH 0.1.0-rc.8（npm））。本仓库位于 [omdsh-dev](https://github.com/omdsh-dev) 组织，公开可访问：
 
 ```sh
 # 交互式（web）profile —— 从 GitHub 仓库安装

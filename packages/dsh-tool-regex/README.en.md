@@ -76,20 +76,20 @@ regex { action: "explain", pattern: "\\d{4}-\\d{2}" }
 | explain nodes over 4,096 | `regex: explain: pattern too complex` |
 | `$` references | Go through the native JS string replacement path: `$$`→`$`, `$n`→group (empty string if not matched), `$<name>`→named group, unknown references kept literally (`$0`/`$<foo>` consistent with V8) |
 
-## npm 0.1.0-rc.7 Compatibility (Verified)
+## npm 0.1.0-rc.8 Compatibility (Verified)
 
-This plugin has been migrated to the npm 0.1.0-rc.7 dependency line and fully verified end-to-end in an isolated consumer of `@deepseek-ai/dsh@0.1.0-rc.7` (npm private package):
+This plugin has been migrated to the npm 0.1.0-rc.8 dependency line and fully verified end-to-end in an isolated consumer of `@deepseek-ai/dsh@0.1.0-rc.8` (npm private package):
 
 - **Types/runtime**: peers are `@deepseek-ai/cordis: ^4.0.1` + `@deepseek-ai/dsh-tools: >=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants: >=0.0.1-rc.1 <0.2.0`; no longer depends on the unscoped `cordis`
 - **Standalone build**: `npm install` (devDependencies are self-contained: typescript/vitest/@types/node) → `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
-- **Consumption verification**: tarball installed into a DSH 0.1.0-rc.7 (npm) consumer → `dsh --profile compat --dump-config` shows this plugin's row → tool registration and execution actually pass
-- **Launch method**: `npx -p @deepseek-ai/dsh@0.1.0-rc.7 dsh web` (lib production mode; do not `install -g` globally)
+- **Consumption verification**: tarball installed into a DSH 0.1.0-rc.8 (npm) consumer → `dsh --profile compat --dump-config` shows this plugin's row → tool registration and execution actually pass
+- **Launch method**: `npx -p @deepseek-ai/dsh@0.1.0-rc.8 dsh web` (lib production mode; do not `install -g` globally)
 
 ## Installation
 
 ### Profile Bundle (Recommended)
 
-Install this plugin into a profile as a standalone bundle (DSH 0.1.0-rc.7 (npm)). This repository lives under the [omdsh-dev](https://github.com/omdsh-dev) organization and is publicly accessible:
+Install this plugin into a profile as a standalone bundle (DSH 0.1.0-rc.8 (npm)). This repository lives under the [omdsh-dev](https://github.com/omdsh-dev) organization and is publicly accessible:
 
 ```sh
 # Interactive (web) profile —— install from the GitHub repository

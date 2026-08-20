@@ -79,21 +79,21 @@ csv { action: "stats", csv: "name,city\nalice,nyc" }
 | 超 256KB 输入 | 直接报错（不截断） |
 | 十万行级输入 | 单遍聚合计算列宽（无 spread），不触发 RangeError |
 
-## npm 0.1.0-rc.7 兼容（已验证）
+## npm 0.1.0-rc.8 兼容（已验证）
 
-本插件已迁移到 npm 0.1.0-rc.7 依赖线，并在 `@deepseek-ai/dsh@0.1.0-rc.7` 的隔离 consumer 中完成全链路验证：
+本插件已迁移到 npm 0.1.0-rc.8 依赖线，并在 `@deepseek-ai/dsh@0.1.0-rc.8` 的隔离 consumer 中完成全链路验证：
 
 - **类型/运行时**：`@deepseek-ai/cordis: ^4.0.1` + `@deepseek-ai/dsh-tools: >=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants: >=0.0.1-rc.1 <0.2.0`（peer）；不再依赖 unscoped `cordis`
 - **独立构建**：`npm install`（devDependencies 自包含 typescript/vitest/@types/node）→ `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
-- **消费验证**：tarball 装入 0.1.0-rc.7 consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
-- **启动方式**：`npx -p @deepseek-ai/dsh@0.1.0-rc.7 dsh web`（lib 生产模式；勿 `install -g` 全局安装）
+- **消费验证**：tarball 装入 0.1.0-rc.8 consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
+- **启动方式**：`npx -p @deepseek-ai/dsh@0.1.0-rc.8 dsh web`（lib 生产模式；勿 `install -g` 全局安装）
 
 
 ## 安装
 
 ### Profile Bundle（推荐）
 
-DSH 0.1.0-rc.7（npm）起，本插件可作为独立 bundle 一键安装到任意 profile（仓库位于 https://github.com/omdsh-dev，public）：
+DSH 0.1.0-rc.8（npm）起，本插件可作为独立 bundle 一键安装到任意 profile（仓库位于 https://github.com/omdsh-dev，public）：
 
 ```sh
 # 交互式（web）profile

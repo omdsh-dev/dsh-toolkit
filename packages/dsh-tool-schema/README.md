@@ -89,21 +89,21 @@ node <monorepo>/node_modules/typescript/bin/tsc -p tsconfig.json
 node <monorepo>/node_modules/vitest/vitest.mjs run tests
 ```
 
-## npm 0.1.0-rc.7 兼容（已验证）
+## npm 0.1.0-rc.8 兼容（已验证）
 
-本插件已迁移到 npm 0.1.0-rc.7 依赖线，并在 `@deepseek-ai/dsh@0.1.0-rc.7` 的隔离 consumer 中完成全链路验证：
+本插件已迁移到 npm 0.1.0-rc.8 依赖线，并在 `@deepseek-ai/dsh@0.1.0-rc.8` 的隔离 consumer 中完成全链路验证：
 
 - **类型/运行时**：`@deepseek-ai/cordis@^4.0.1` + `@deepseek-ai/dsh-tools@>=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants@>=0.0.1-rc.1 <0.2.0`（peer）；不再依赖 unscoped `cordis`
 - **独立构建**：`npm install`（devDependencies 自包含 typescript/vitest/@types/node）→ `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
-- **消费验证**：tarball 装入 0.1.0-rc.7 consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
-- **启动方式**：`npx -p @deepseek-ai/dsh@0.1.0-rc.7 dsh web`（lib 生产模式；勿 `install -g` 全局安装）
+- **消费验证**：tarball 装入 0.1.0-rc.8 consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
+- **启动方式**：`npx -p @deepseek-ai/dsh@0.1.0-rc.8 dsh web`（lib 生产模式；勿 `install -g` 全局安装）
 
 
 ## 安装
 
 ### Profile Bundle（推荐）
 
-仓库位于 [omdsh-dev/dsh-tool-schema](https://github.com/omdsh-dev/dsh-tool-schema)（public）。将本插件作为独立 bundle 安装到 profile（DSH 0.1.0-rc.7（npm））：
+仓库位于 [omdsh-dev/dsh-tool-schema](https://github.com/omdsh-dev/dsh-tool-schema)（public）。将本插件作为独立 bundle 安装到 profile（DSH 0.1.0-rc.8（npm））：
 
 ```sh
 # 交互式（web）profile

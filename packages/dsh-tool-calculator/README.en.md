@@ -94,28 +94,28 @@ export function apply(ctx: Context): void {
 
 Precedence: `**` (right-associative) > unary `±` > `* / %` > `+ -`.
 
-## npm 0.1.0-rc.7 Compatibility (Verified)
+## npm 0.1.0-rc.8 Compatibility (Verified)
 
-This plugin has been migrated to the npm 0.1.0-rc.7 dependency line and fully verified end-to-end in an isolated consumer of `@deepseek-ai/dsh@0.1.0-rc.7`:
+This plugin has been migrated to the npm 0.1.0-rc.8 dependency line and fully verified end-to-end in an isolated consumer of `@deepseek-ai/dsh@0.1.0-rc.8`:
 
 - **Types/runtime**: `@deepseek-ai/cordis: ^4.0.1` + `@deepseek-ai/dsh-tools: >=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants: >=0.0.1-rc.1 <0.2.0` (peer); no longer depends on unscoped `cordis`
 - **Standalone build**: `npm install` (devDependencies self-contained: typescript/vitest/@types/node) → `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
-- **Consumption verification**: tarball loaded into a 0.1.0-rc.7 consumer → `dsh --profile compat --dump-config` shows this plugin's row → the tool genuinely registers and executes
-- **Launch method**: `npx -p @deepseek-ai/dsh@0.1.0-rc.7 dsh web` (lib production mode; don't `install -g` globally)
+- **Consumption verification**: tarball loaded into a 0.1.0-rc.8 consumer → `dsh --profile compat --dump-config` shows this plugin's row → the tool genuinely registers and executes
+- **Launch method**: `npx -p @deepseek-ai/dsh@0.1.0-rc.8 dsh web` (lib production mode; don't `install -g` globally)
 
 
 ## Version Adaptation
 
-- **DSH adapted**: DSH 0.1.0-rc.7 (npm) (migration: profile/bundle plugin system)
+- **DSH adapted**: DSH 0.1.0-rc.8 (npm) (migration: profile/bundle plugin system)
 - **bundle declaration**: `dsh.bundle` in `package.json` (patch points to `cordis.patch.yml`) + `exports` export
-- **patch format**: `cordis.patch.yml` uses the `- insert:` list (the DSH 0.1.0-rc.7 (npm) patch is id-targeted semantics; a bare `- id:` entry reports `entry not found`)
+- **patch format**: `cordis.patch.yml` uses the `- insert:` list (the DSH 0.1.0-rc.8 (npm) patch is id-targeted semantics; a bare `- id:` entry reports `entry not found`)
 - **files**: the published tarball contains `lib/`, `src/`, `cordis.patch.yml`
 
 ## Installation
 
 ### Profile Bundle (Recommended)
 
-As of DSH 0.1.0-rc.7 (npm), this plugin can be installed into any profile as a standalone bundle in one step (repositories live at https://github.com/omdsh-dev, public):
+As of DSH 0.1.0-rc.8 (npm), this plugin can be installed into any profile as a standalone bundle in one step (repositories live at https://github.com/omdsh-dev, public):
 
 ```sh
 # 交互式（web）profile
@@ -167,7 +167,7 @@ For source contribution (developing/debugging this plugin in the monorepo) or fo
 
 5. Verify: `dsh --profile <name> --dump-config | grep tool-calculator`
 
-> DSH 0.1.0-rc.7 (npm) note: the patch is id-targeted semantics — a bare `- id:` entry reports `entry "xxx" not found`; it must be wrapped in a `- insert:` list.
+> DSH 0.1.0-rc.8 (npm) note: the patch is id-targeted semantics — a bare `- id:` entry reports `entry "xxx" not found`; it must be wrapped in a `- insert:` list.
 ## Usage
 
 After installation, the agent automatically gets the `calculator` tool:
@@ -180,7 +180,7 @@ The tool name satisfies DeepSeek's function-name constraints (≤64 characters, 
 
 ## Known Limitations
 
-1. **Distribution chain**: `@deepseek-ai/dsh-tools` is now published as a private npm package with DSH 0.1.0-rc.7 (npm); the plugin installs directly via `dsh plugin add github:omdsh-dev/...` or the tarball, with no need to place it in the monorepo for workspace resolution
+1. **Distribution chain**: `@deepseek-ai/dsh-tools` is now published as a private npm package with DSH 0.1.0-rc.8 (npm); the plugin installs directly via `dsh plugin add github:omdsh-dev/...` or the tarball, with no need to place it in the monorepo for workspace resolution
 2. **Trigonometric functions use radians**: consistent with `Math.sin`/`Math.cos`; write `sin(30 * PI / 180)` when you need degrees
 3. **No big integers**: JS `number` is an IEEE 754 double; the safe integer range is ±9e15, beyond which precision is lost
 4. **No scientific notation**: `1e5` is rejected by the lexer layer

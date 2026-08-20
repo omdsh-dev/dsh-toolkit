@@ -125,7 +125,7 @@ npm pack                    # prepack 自包含（build:all），tarball 含 lib
 **Monorepo mode (optional: source contribution / legacy snapshots)**: explicitly provide the DSH monorepo root:
 
 ```bash
-export DSH_MONOREPO=<DSH 0.1.0-rc.7 (npm) install path>   # 或作为第一个参数
+export DSH_MONOREPO=<DSH 0.1.0-rc.8 (npm) install path>   # 或作为第一个参数
 bash scripts/build-all.sh   # link-deps + 10 子包 + meta 包 tsc + 产物完整性验证
 bash scripts/test-all.sh
 ```

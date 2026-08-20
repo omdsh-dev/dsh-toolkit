@@ -79,19 +79,19 @@ ctx.tools.register(defineTool({
 
 **不支持**（低频场景，bash + node 兜底）：过滤器 `[?downloads > 1000]`、管道 `|`、函数调用。
 
-## npm 0.1.0-rc.7 兼容（已验证）
+## npm 0.1.0-rc.8 兼容（已验证）
 
-本插件已迁移到 npm 0.1.0-rc.7 依赖线，并在 `@deepseek-ai/dsh@0.1.0-rc.7` 的隔离 consumer 中完成全链路验证：
+本插件已迁移到 npm 0.1.0-rc.8 依赖线，并在 `@deepseek-ai/dsh@0.1.0-rc.8` 的隔离 consumer 中完成全链路验证：
 
 - **类型/运行时**：`@deepseek-ai/cordis@^4.0.1` + `@deepseek-ai/dsh-tools@>=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants@>=0.0.1-rc.1 <0.2.0`（peer）；不再依赖 unscoped `cordis`
 - **独立构建**：`npm install`（devDependencies 自包含 typescript/vitest/@types/node）→ `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
-- **消费验证**：tarball 装入 0.1.0-rc.7 consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
-- **启动方式**：`npx -p @deepseek-ai/dsh@0.1.0-rc.7 dsh web`（lib 生产模式；勿 `install -g` 全局安装）
+- **消费验证**：tarball 装入 0.1.0-rc.8 consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
+- **启动方式**：`npx -p @deepseek-ai/dsh@0.1.0-rc.8 dsh web`（lib 生产模式；勿 `install -g` 全局安装）
 
 
 ## 版本适配
 
-- **适配 DSH 版本**: DSH 0.1.0-rc.7（npm）
+- **适配 DSH 版本**: DSH 0.1.0-rc.8（npm）
 - **bundle 声明**: `package.json` 的 `dsh.bundle`（patch 指向 `cordis.patch.yml`）+ `exports` 导出
 - **patch 格式**: `cordis.patch.yml` 使用 `- insert:` 列表（patch 是 id-targeted 语义，裸 `- id:` 条目会报 `entry not found`）
 - **files**: 发布 tarball 含 `lib/`、`src/`、`cordis.patch.yml`
@@ -102,7 +102,7 @@ ctx.tools.register(defineTool({
 
 ### Profile Bundle（推荐）
 
-将本插件作为独立 bundle 安装到 profile（DSH 0.1.0-rc.7，npm）：
+将本插件作为独立 bundle 安装到 profile（DSH 0.1.0-rc.8，npm）：
 
 ```sh
 # 交互式（web）profile
