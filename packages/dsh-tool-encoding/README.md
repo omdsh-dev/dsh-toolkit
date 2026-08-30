@@ -79,19 +79,19 @@ ctx.tools.register(defineTool({
 - **所有 action 返回字符串**（含 `uuid`）
 - **不要对机密材料使用本工具**：tool 参数会记录进会话日志
 
-## DSH 0.1.2-alpha.1 兼容（已验证）
+## DSH 0.1.2-alpha.2 兼容（已验证）
 
-本插件已迁移到 DSH 0.1.2-alpha.1 依赖线，并在 `local harness 0.1.2-alpha.1` 的隔离 consumer 中完成全链路验证：
+本插件已迁移到 DSH 0.1.2-alpha.2 依赖线，并在 `local harness 0.1.2-alpha.2` 的隔离 consumer 中完成全链路验证：
 
 - **类型/运行时**：`@deepseek-ai/cordis@^4.0.1` + `@deepseek-ai/dsh-tools@>=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants@>=0.0.1-rc.1 <0.2.0`（peer）；不再依赖 unscoped `cordis`
 - **独立构建**：`npm install`（devDependencies 自包含 typescript/vitest/@types/node）→ `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
-- **消费验证**：tarball 装入 0.1.2-alpha.1 consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
+- **消费验证**：tarball 装入 0.1.2-alpha.2 consumer → `dsh --profile compat --dump-config` 出现本插件 row → 工具真实注册与执行通过
 - **启动方式**：`npx -p @deepseek-ai/dsh@next dsh web`（lib 生产模式；勿 `install -g` 全局安装）
 
 
 ## 版本适配
 
-- **适配 DSH 版本**: DSH 0.1.2-alpha.1（npm）
+- **适配 DSH 版本**: DSH 0.1.2-alpha.2（npm）
 - **bundle 声明**: `package.json` 的 `dsh.bundle`（patch 指向 `cordis.patch.yml`）+ `exports` 导出
 - **patch 格式**: `cordis.patch.yml` 使用 `- insert:` 列表（patch 是 id-targeted 语义，裸 `- id:` 条目会报 `entry not found`）
 - **files**: 发布 tarball 含 `lib/`、`src/`、`cordis.patch.yml`
@@ -102,7 +102,7 @@ ctx.tools.register(defineTool({
 
 ### Profile Bundle（推荐）
 
-将本插件作为独立 bundle 安装到 profile（DSH 0.1.2-alpha.1，npm）：
+将本插件作为独立 bundle 安装到 profile（DSH 0.1.2-alpha.2，npm）：
 
 ```sh
 # 交互式（web）profile
