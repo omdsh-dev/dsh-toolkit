@@ -79,13 +79,13 @@ csv { action: "stats", csv: "name,city\nalice,nyc" }
 | Input over 256KB | Errors directly (no truncation) |
 | Hundred-thousand-row input | Single-pass aggregation computes column widths (no spread), no RangeError |
 
-## DSH 0.1.2-alpha.4 Compatibility (Verified)
+## DSH 0.1.2-rc.1 Compatibility (Verified)
 
-This plugin has been migrated to the DSH 0.1.2-alpha.4 harness and fully verified end-to-end in an isolated consumer of `local harness 0.1.2-alpha.4`:
+This plugin has been migrated to the DSH 0.1.2-rc.1 harness and fully verified end-to-end in an isolated consumer of `local harness 0.1.2-rc.1`:
 
 - **Types/runtime**: `@deepseek-ai/cordis: ^4.0.1` + `@deepseek-ai/dsh-tools: >=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants: >=0.0.1-rc.1 <0.2.0` (peer); no longer depends on unscoped `cordis`
 - **Standalone build**: `npm install` (devDependencies self-contained: typescript/vitest/@types/node) → `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
-- **Consumption verification**: tarball loaded into a 0.1.2-alpha.4 consumer → `dsh --profile compat --dump-config` shows this plugin's row → the tool genuinely registers and executes
+- **Consumption verification**: tarball loaded into a 0.1.2-rc.1 consumer → `dsh --profile compat --dump-config` shows this plugin's row → the tool genuinely registers and executes
 - **Launch method**: `npx -p @deepseek-ai/dsh@next dsh web` (lib production mode; don't `install -g` globally)
 
 
@@ -93,7 +93,7 @@ This plugin has been migrated to the DSH 0.1.2-alpha.4 harness and fully verifie
 
 ### Profile Bundle (Recommended)
 
-As of DSH 0.1.2-alpha.4, this plugin can be installed into any profile as a standalone bundle in one step (repositories live at https://github.com/omdsh-dev, public):
+As of DSH 0.1.2-rc.1, this plugin can be installed into any profile as a standalone bundle in one step (repositories live at https://github.com/omdsh-dev, public):
 
 ```sh
 # 交互式（web）profile
