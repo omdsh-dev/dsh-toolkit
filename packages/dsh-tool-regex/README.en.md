@@ -76,20 +76,20 @@ regex { action: "explain", pattern: "\\d{4}-\\d{2}" }
 | explain nodes over 4,096 | `regex: explain: pattern too complex` |
 | `$` references | Go through the native JS string replacement path: `$$`→`$`, `$n`→group (empty string if not matched), `$<name>`→named group, unknown references kept literally (`$0`/`$<foo>` consistent with V8) |
 
-## DSH 0.1.5-alpha.1 Compatibility (Verified)
+## DSH 0.1.5-rc.1 Compatibility (Verified)
 
-This plugin has been migrated to the DSH 0.1.5-alpha.1 harness and fully verified end-to-end in an isolated consumer of `local harness 0.1.5-alpha.1` (npm private package):
+This plugin has been migrated to the DSH 0.1.5-rc.1 harness and fully verified end-to-end in an isolated consumer of `local harness 0.1.5-rc.1` (npm private package):
 
 - **Types/runtime**: peers are `@deepseek-ai/cordis: ^4.0.1` + `@deepseek-ai/dsh-tools: >=0.0.1-rc.1 <0.2.0` + `@deepseek-ai/dsh-invariants: >=0.0.1-rc.1 <0.2.0`; no longer depends on the unscoped `cordis`
 - **Standalone build**: `npm install` (devDependencies are self-contained: typescript/vitest/@types/node) → `npm run typecheck` → `npm test` → `npm run build` → `npm pack`
-- **Consumption verification**: tarball installed into a DSH 0.1.5-alpha.1 consumer → `dsh --profile compat --dump-config` shows this plugin's row → tool registration and execution actually pass
+- **Consumption verification**: tarball installed into a DSH 0.1.5-rc.1 consumer → `dsh --profile compat --dump-config` shows this plugin's row → tool registration and execution actually pass
 - **Launch method**: `npx -p @deepseek-ai/dsh@next dsh web` (lib production mode; do not `install -g` globally)
 
 ## Installation
 
 ### Profile Bundle (Recommended)
 
-Install this plugin into a profile as a standalone bundle (DSH 0.1.5-alpha.1). This repository lives under the [omdsh-dev](https://github.com/omdsh-dev) organization and is publicly accessible:
+Install this plugin into a profile as a standalone bundle (DSH 0.1.5-rc.1). This repository lives under the [omdsh-dev](https://github.com/omdsh-dev) organization and is publicly accessible:
 
 ```sh
 # Interactive (web) profile —— install from the GitHub repository
